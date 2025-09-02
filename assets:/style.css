@@ -173,3 +173,23 @@ footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}
 }
 
 [id]{ scroll-margin-top: 90px; } /* ヘッダー分ずらす */
+
+/* --- Admin buttons --- */
+.admin-fab {
+  position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.admin-fab a, .admin-fab button {
+  border: 1px solid rgba(0,0,0,.12);
+  padding: 10px 12px; border-radius: 10px; text-decoration: none;
+  background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  font-size: 14px; cursor: pointer;
+}
+.admin-fab a:hover, .admin-fab button:hover { filter: brightness(0.97); }
+.admin-badge {
+  position: fixed; left: 12px; bottom: 18px; z-index: 9999;
+  background: #111; color: #fff; border-radius: 6px; padding: 4px 8px; font-size: 12px;
+  opacity: .85;
+}
+
