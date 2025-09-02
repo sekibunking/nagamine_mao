@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>リンク集</title>
+<style>
+:root{--brand:#e60033;--ink:#222;--muted:#666;--line:#e8e8e8;--bg:#f6f7f8;--card:#fff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",sans-serif}
+a{color:#0645ad;text-decoration:underline}
+a:hover{text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:0 14px}
+header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--brand)}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#ff4a6e,var(--brand))}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:#222;text-decoration:none;display:inline-flex;align-items:center}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{height:26px;padding:0 8px;font-size:.9rem}
+.h2{font-weight:900;margin:16px 0 8px}
+
+/* 検索バー */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.search{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.search input,.search select{height:40px;border:1px solid var(--line);border-radius:999px;padding:0 12px}
+.search input{flex:1;min-width:240px}
+
+/* セクション（見出し + リスト） */
+.section{background:#fff;border:1px solid var(--line);border-radius:8px;margin:14px 0}
+.section > .head{font-weight:900;background:#fafafa;border-bottom:1px solid var(--line);padding:10px 12px}
+.link-list{list-style:disc;margin:0;padding:10px 28px}
+.link-list .item{margin:8px 0;padding:6px 0;border-bottom:1px dotted #ddd}
+.link-list .item:last-child{border-bottom:0}
+.title-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.title-line a.link{font-weight:700}
+.badge{display:inline-block;padding:0 8px;border-radius:999px;border:1px solid #ddd;background:#fff;font-size:.82rem;color:#555}
+.badge.pin{border-color:#ffb400;background:#fff6d7}
+.domain{color:#777;font-size:.9rem}
+.desc{color:#444;margin-top:4px;white-space:pre-wrap}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag{display:inline-block;font-size:.82rem;padding:2px 8px;border:1px solid #e0e0e0;border-radius:999px;background:#fff;color:#555;cursor:pointer}
+.ops{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.sep{color:#bbb}
+
+.empty{color:#777;border:1px dashed var(--line);background:#fff;padding:12px;border-radius:8px}
+footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0}
+.copyright{border-top:1px solid var(--line);color:#777;padding:12px 0;font-size:.88rem}
+
+/* 並び替えモードの見た目 */
+.handle{display:none; cursor:grab; user-select:none}
+.reordering .handle{display:inline-block; color:#888; margin-right:6px}
+.reordering .handle:active{ cursor:grabbing }
+.item[draggable="true"]{background: #fffdf2}
+.item.dragging{opacity:.6}
+.item.drop-before{border-top:2px solid #e60033}
+.item.drop-after{border-bottom:2px solid #e60033}
+
+
+.reordering .title-line a.link{ pointer-events:none; opacity:.75; text-decoration:none }
+.reordering .ops{ display:none }
+
+.reordering .tag{ pointer-events:none; opacity:.8 }
+
+.admin-only { display:none !important; }
+.is-admin .admin-only { display: initial !important; }
+.is-admin .admin-only.block { display:block !important; }
+
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="container header-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>長峰実央</span></a>
+    <div class="actions">
+      <a class="btn" href="history.html">履歴</a>
+      <a class="btn" href="units.html">取得単位</a>
+      <a class="btn" href="comments.html">論文のコメント</a>
+      <a class="btn" href="albums.html">アルバム</a>
+      <a class="btn primary" href="links.html">リンク集</a>
+    </div>
+  </div>
+
+
+  
+</header>
+
+<main class="container">
+  <div class="h2">リンク集</div>
+  <div class="tools">
+    <button class="btn admin-only" id="btn-add">＋ リンク追加</button>
+    <button class="btn" id="btn-export">エクスポート</button>
+    <button class="btn admin-only" id="btn-reorder">並び替え</button>
+    <label class="btn admin-only" for="imp" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+      インポート<input id="imp" type="file" accept="application/json" style="display:none">
+    </label>
+  </div>
+
+  <form class="search" onsubmit="event.preventDefault(); doSearch()">
+    <input id="q" placeholder="検索（タイトル／説明／URL／タグ）" aria-label="検索">
+    <button type="submit" class="btn">検索</button>
+    <button type="button" class="btn" onclick="clearSearch()">クリア</button>
+  </form>
+
+  <div id="list"></div>
+  <div id="empty" class="empty" style="display:none">まだリンクがありません。上の「＋ リンク追加」から登録してください。</div>
+</main>
+
+<footer>
+  <div class="container footer-links" id="footer-links"></div>
+  <div class="container copyright">© 2025 Mao Nagamine</div>
+</footer>
+
+<script>
+// ===== 共通フッター（現行ファイル踏襲） =====
+const FOOTER_LINKS=[
+  {label:'ホーム',href:'index.html'},
+  {label:'履歴',href:'history.html'},
+  {label:'取得単位',href:'units.html'},
+  {label:'論文のコメント',href:'comments.html'},
+  {label:'アルバム', href:'albums.html'},
+  {label:'リンク集',href:'links.html'},
+  {label:'お問い合わせ',href:'mailto:nagamine.mao.d9@elms.hokudai.ac.jp'}
+];
+function renderFooter(){
+  const nav=document.getElementById('footer-links'); if(!nav) return;
+  nav.innerHTML = FOOTER_LINKS.map((x,i)=>`
+    <a href="${x.href}" ${x.target?`target="${x.target}" rel="noopener"`:''}>${x.label}</a>
+    ${i<FOOTER_LINKS.length-1?'<span class="sep">/</span>':''}
+  `).join('');
+}
+document.addEventListener('DOMContentLoaded', renderFooter);
+
+// ===== データ永続化（既存と同じスキーマ） =====
+const LSK='links_v1';
+const load=()=>JSON.parse(localStorage.getItem(LSK)||'[]');
+const save=(arr)=>localStorage.setItem(LSK, JSON.stringify(arr));
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+// 追加：pos（順序）を連番に整える関数
+function normalizePositions(arr){
+  // pos 未設定は末尾扱い
+  let i=0;
+  arr.sort((a,b)=>{
+    const ap = (typeof a.pos==='number')? a.pos : Number.MAX_SAFE_INTEGER-1;
+    const bp = (typeof b.pos==='number')? b.pos : Number.MAX_SAFE_INTEGER-1;
+    return ap - bp;
+  });
+  for(const x of arr){ x.pos = i++; }
+  return arr;
+}
+
+// 現在の配列順をそのまま pos に反映（並び替え完了時に使う）
+function setPositionsFromOrder(arr){
+  let i = 0;
+  for (const x of arr) x.pos = i++;
+  return arr;
+}
+
+
+// ===== 検索・絞り込み =====
+function qval(){return (document.getElementById('q')?.value||'').trim().toLowerCase();}
+function hit(x,q){
+  if(!q) return true;
+  const hay = [x.title,x.desc,x.url,(x.tags||[]).join(' ')].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+// カテゴリ表示名
+const CAT_LABEL={
+  paper:'論文', talk:'口頭発表', academic:'学術貢献', social:'社会貢献',
+  committee:'委員', grant:'研究費', personal:'個人', affiliation:'所属',
+  sns:'SNS', other:'その他', '':'その他'
+};
+
+// ===== 表示（“見出し + 箇条書き”スタイル） =====
+function domainOf(u){ try{ return new URL(u).hostname; }catch(_){ return ''; } }
+function itemRow(x){
+  const pin = x.pinned ? `<span class="badge pin">PIN</span>` : '';
+  const dom = domainOf(x.url);
+  const tags = (x.tags||[]).map(t=>`<span class="tag" data-tag="${t}">#${t}</span>`).join('');
+  return `
+    <li class="item" data-id="${x.id}">
+      <div class="title-line">
+        <a class="link" href="${x.url||'#'}" ${x.url?'target="_blank" rel="noopener"':''}>${x.title||'(無題)'}</a>
+        ${pin}
+        ${dom? `<span class="domain">（${dom}）</span>` : ''}
+      </div>
+      ${x.desc ? `<div class="desc">${x.desc}</div>` : ''}
+      ${tags ? `<div class="tags">${tags}</div>` : ''}
+      <div class="ops admin-only block">
+        <button class="btn sm" data-act="pin">${x.pinned?'ピン解除':'ピン留め'}</button>
+        <button class="btn sm" data-act="edit">編集</button>
+        <button class="btn sm" data-act="del">削除</button>
+        ${x.url ? `<a class="btn sm" href="${x.url}" target="_blank" rel="noopener">開く</a>` : ''}
+      </div>
+    </li>
+  `;
+}
+
+function render(){
+  // データ読み込み＆pos整備
+  const arr = normalizePositions(load());
+
+  // フィルタ値
+  const q = qval();
+
+  // フィルタ適用（順序は pos のまま）
+  const filtered = arr.filter(x=>{
+  const hay = [x.title,x.desc,x.url,(x.tags||[]).join(' ')].join(' ').toLowerCase();
+  return !q || hay.includes(q.toLowerCase());
+  });
+
+  // 並び替えモードの判定（後述のトグルが this flag を更新）
+  const isReorder = document.body.classList.contains('reordering');
+
+  const listBox = document.getElementById('list');
+  if(!filtered.length){
+    listBox.innerHTML=''; document.getElementById('empty').style.display='block'; return;
+  }
+  document.getElementById('empty').style.display='none';
+
+ // 枠なし：<ul> だけにする
+  listBox.innerHTML = `
+    <ul class="link-list" id="link-ul">
+      ${filtered.map(x=>`
+        <li class="item" data-id="${x.id}" draggable="${isReorder?'true':'false'}">
+          <div class="title-line">
+            <span class="handle" title="ドラッグで並び替え">↕</span>
+            <a class="link" href="${x.url||'#'}" ${x.url?'target="_blank" rel="noopener"':''}>${x.title||'(無題)'}</a>
+            ${x.pinned? '<span class="badge pin">PIN</span>':''}
+            ${x.url? `<span class="domain">（${(function(){try{return new URL(x.url).hostname}catch(_){return ''}})()}）</span>`:''}
+          </div>
+          ${x.desc ? `<div class="desc">${x.desc}</div>` : ''}
+          ${(x.tags||[]).length? `<div class="tags">${x.tags.map(t=>`<span class="tag" data-tag="${t}">#${t}</span>`).join('')}</div>`:''}
+          <div class="ops">
+            <button class="btn sm" data-act="pin">${x.pinned?'ピン解除':'ピン留め'}</button>
+            <button class="btn sm" data-act="edit">編集</button>
+            <button class="btn sm" data-act="del">削除</button>
+            ${x.url ? `<a class="btn sm" href="${x.url}" target="_blank" rel="noopener">開く</a>` : ''}
+          </div>
+        </li>
+      `).join('')}
+    </ul>
+  `;
+
+  // 並び替えモードのときだけ DnD を配線
+  if(isReorder) wireDnD();
+}
+
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  // 検索の復元
+  const q=sessionStorage.getItem('links_q')||'';
+  const qi=document.getElementById('q'); if(qi) qi.value=q;
+  render();
+});
+
+// ===== 操作系 =====
+function doSearch(){
+  sessionStorage.setItem('links_q', qval());
+  render();
+}
+function clearSearch(){
+  document.getElementById('q').value='';
+  sessionStorage.removeItem('links_q');
+  render();
+}
+
+// 追加・編集（既存仕様を継承：promptベース）
+function editLink(obj){
+  const now = new Date().toISOString();
+  const base = obj || {id:uid(), title:'', url:'', desc:'', category:'other', tags:[], pinned:false, created:now};
+  const title = prompt('タイトル', base.title); if(title===null) return null;
+  const url   = prompt('URL', base.url); if(url===null) return null;
+  const desc  = prompt('説明（任意）', base.desc||''); if(desc===null) return null;
+  const category = prompt('カテゴリ（paper/talk/academic/social/committee/grant/personal/affiliation/sns/other）', base.category||'other'); if(category===null) return null;
+  const tags  = prompt('タグ（カンマ区切り、例：公開,資料,英語）', (base.tags||[]).join(',')); if(tags===null) return null;
+  return {
+    ...base,
+    title, url, desc, category,
+    tags: tags.split(',').map(s=>s.trim()).filter(Boolean),
+    updated: now
+  };
+}
+
+// 追加
+document.getElementById('btn-add').onclick = ()=>{
+  const arr = load();
+  const obj = editLink(null);
+  if(!obj) return;
+  obj.pos = arr.length ? Math.max(...arr.map(x=>typeof x.pos==='number'?x.pos:0))+1 : 0;
+  arr.push(obj); save(arr); render();
+};
+
+
+// エクスポート
+document.getElementById('btn-export').onclick = ()=>{
+  const arr = load();
+  const blob = new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'links_data.json'; a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// インポート
+document.getElementById('imp').onchange = (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload = ()=>{
+    try{
+      const incoming = JSON.parse(r.result||'[]');
+      if(!Array.isArray(incoming)) throw new Error('配列ではありません');
+      const map = new Map(load().map(x=>[x.id,x]));
+      for(const x of incoming){ if(x && x.id) map.set(x.id, x); }
+      save(Array.from(map.values())); render();
+      alert('インポートしました');
+    }catch(err){ alert('インポート失敗: '+err.message); }
+    e.target.value='';
+  };
+  r.readAsText(f, 'utf-8');
+};
+
+// リスト内のボタン操作（イベント委譲）
+document.getElementById('list').onclick = (ev)=>{
+  const li = ev.target.closest('.item'); if(!li) return;
+  const id = li.dataset.id;
+  const arr = load();
+  const ix = arr.findIndex(x=>x.id===id); if(ix<0) return;
+
+  const actBtn = ev.target.closest('button[data-act]');
+  if(!actBtn){
+    // タグクリック→検索
+    const tag = ev.target.closest('.tag');
+    if(tag){
+      const t = tag.dataset.tag;
+      const q = document.getElementById('q'); q.value = t;
+      doSearch();
+    }
+    return;
+  }
+  const act = actBtn.dataset.act;
+  if(act==='pin'){
+    arr[ix].pinned = !arr[ix].pinned; arr[ix].updated = new Date().toISOString(); save(arr); render(); return;
+  }
+  if(act==='edit'){
+    const obj = editLink(arr[ix]); if(!obj) return;
+    arr[ix]=obj; save(arr); render(); return;
+  }
+  if(act==='del'){
+    if(!confirm('このリンクを削除しますか？')) return;
+    arr.splice(ix,1); save(arr); render(); return;
+  }
+};
+
+
+// 並び替えモードのトグル
+document.getElementById('btn-reorder').addEventListener('click', ()=>{
+  const on = document.body.classList.toggle('reordering');
+  document.getElementById('btn-reorder').textContent = on ? '並び替えを終了' : '並び替え';
+  render();
+});
+
+// DnD 配線：各 <li.item> に直接 drag/drop を付与（安定版）
+function wireDnD(){
+  const ul = document.getElementById('link-ul');
+  const arr = normalizePositions(load());
+  const items = Array.from(ul.querySelectorAll('.item'));
+  let dragId = null;
+
+  items.forEach(li=>{
+    // ドラッグ開始
+    li.addEventListener('dragstart', (e)=>{
+      dragId = li.dataset.id;
+      li.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      // 一部ブラウザ対策：setDataが無いとdropが発火しづらい
+      e.dataTransfer.setData('text/plain', dragId);
+    });
+
+    // ドラッグ終了（掃除）
+    li.addEventListener('dragend', ()=>{
+      li.classList.remove('dragging','drop-before','drop-after');
+      items.forEach(x=>x.classList.remove('drop-before','drop-after'));
+    });
+
+    // 乗ったときのガイド表示
+    li.addEventListener('dragover', (e)=>{
+      e.preventDefault();
+      if(li.dataset.id===dragId) return;
+      const rect = li.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height/2;
+      items.forEach(x=>x.classList.remove('drop-before','drop-after'));
+      li.classList.add(before ? 'drop-before' : 'drop-after');
+      e.dataTransfer.dropEffect = 'move';
+    });
+
+    // ドロップ（確定）
+    li.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      if(!dragId || li.dataset.id===dragId) return;
+
+      const toId = li.dataset.id;
+      const before = li.classList.contains('drop-before');
+      items.forEach(x=>x.classList.remove('drop-before','drop-after'));
+
+      const fromIx = arr.findIndex(x=>x.id===dragId);
+      const toIx   = arr.findIndex(x=>x.id===toId);
+      if(fromIx<0 || toIx<0) return;
+
+      const [moved] = arr.splice(fromIx,1);
+      const newIx = before ? toIx : toIx+1;
+      arr.splice(newIx, 0, moved);
+
+      setPositionsFromOrder(arr);
+      save(arr);
+      render(); // 並び替えモード継続で再配線
+    });
+  });
+
+  // 末尾へも落とせるよう、ULの下端に透明ドロップゾーンを用意（見た目は変えない）
+  const tail = document.createElement('li');
+  tail.className = 'item';
+  tail.style.listStyle = 'none';
+  tail.style.padding = '0';
+  tail.style.margin = '0';
+  tail.style.height = '12px'; // 小さな着地点
+  tail.addEventListener('dragover', (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; });
+  tail.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    if(!dragId) return;
+    const fromIx = arr.findIndex(x=>x.id===dragId);
+    if(fromIx<0) return;
+    const [moved] = arr.splice(fromIx,1);
+    arr.push(moved);
+    setPositionsFromOrder(arr);
+    save(arr);
+    render();
+  });
+  ul.appendChild(tail);
+}
+
+
+
+</script>
+
+
+<script>
+(function(){
+  const p=new URLSearchParams(location.search);
+  const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+               || location.protocol==='file:'
+               || p.get('admin')==='1'
+               || localStorage.getItem('admin')==='1';
+  if(isLocal) document.documentElement.classList.add('is-admin');
+  // Ctrl+Shift+E で切替
+  addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='e'){
+      const on=localStorage.getItem('admin')==='1';
+      localStorage.setItem('admin', on?'0':'1'); location.reload();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>履歴 — 学歴・職歴／論文・口頭発表・活動/研究費</title>
+<style>
+:root{--brand:#e60033;--ink:#222;--muted:#666;--line:#e8e8e8;--bg:#f6f7f8;--card:#fff;--shadow:0 8px 24px rgba(0,0,0,.06)}
+*{box-sizing:border-box}html,body{margin:0}body{background:#f6f7f8;color:#222;font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",sans-serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 14px}
+header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--brand)}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#ff4a6e,var(--brand))}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+main.container{margin:16px auto}
+.search{flex:1;display:flex;gap:8px}.search input{flex:1;height:40px;border:1px solid var(--line);border-radius:999px;padding:0 44px 0 14px}
+.search .go{margin-left:-42px;width:36px;height:36px;border-radius:50%;border:0;background:var(--brand);cursor:pointer}
+
+/* 検索UI（ホームと同じルックに） */
+.search{display:flex;gap:8px}
+.search input{flex:1;height:42px;border:1px solid var(--line);border-radius:999px;padding:0 14px}
+.search .btn-search{height:42px;border-radius:999px;border:0;background:var(--brand);color:#fff;padding:0 16px;cursor:pointer}
+.search .btn-clear{height:42px;border-radius:999px;border:1px solid var(--line);background:#fff;padding:0 16px;cursor:pointer}
+
+/* もし前の赤い丸ボタン .go がある場合、無効化するなら… */
+.search .go{display:none}
+
+
+.profile{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:12px}
+.timeline{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:12px;align-items:flex-start}
+.col-date{flex:0 0 160px;color:#555}
+.col-body{flex:1}
+.title{font-weight:800}
+.sub{color:#666}
+.ops{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;background:#f0f0f0;display:grid;place-items:center;font-weight:700;color:#999}
+.meta{padding:10px;display:flex;flex-direction:column;gap:6px}
+.caption{color:#666;font-size:.92rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+
+.ncards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:1000px){.ncards{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.ncards{grid-template-columns:1fr}}
+.ncard{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;display:flex;gap:12px;padding:10px}
+.nthumb{flex:0 0 140px;aspect-ratio:16/10;background:#f0f0f0;display:grid;place-items:center;color:#999;font-weight:700;border-radius:8px;overflow:hidden}
+.nmeta{flex:1;display:flex;flex-direction:column;gap:6px}
+
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+small.muted{color:#777}
+
+/* footer links */
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0}
+.footer-links a{color:#444;text-decoration:none;padding:4px 6px;border-radius:8px}
+.footer-links a:hover{background:rgba(0,0,0,.05)}
+.footer-links .sep{color:#bbb}
+footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}.copyright{border-top:1px solid var(--line);color:#777;padding:12px 0;font-size:.88rem}
+
+
+.admin-only { display:none !important; }
+.is-admin .admin-only { display: initial !important; }
+.is-admin .admin-only.block { display:block !important; }
+
+</style>
+
+
+
+</head><body>
+<header class="site">
+  <div class="container header-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>長峰実央</span></a>
+    <form class="search" onsubmit="event.preventDefault(); doSearch()">
+<form class="search" onsubmit="event.preventDefault(); doSearch()">
+  <input id="q" placeholder="検索（学歴・職歴・論文・口頭発表・活動・研究費）" aria-label="検索">
+  <button type="submit" class="btn-search">検索</button>
+  <button type="button" class="btn-clear" onclick="clearSearch()">クリア</button>
+</form>
+
+    <div class="actions">
+      <a class="btn" href="history.html">履歴</a>
+      <a class="btn" href="units.html">取得単位</a>
+      <a class="btn" href="comments.html">論文のコメント</a>
+      <a class="btn" href="comments.html">アルバム</a>
+      <a class="btn primary" href="links.html">リンク集</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section>
+    <div class="h2">学校歴・職歴</div>
+    <div class="tools">
+      <button class="btn admin-only" onclick="addProfile('education')">＋ 学校歴追加</button>
+      <button class="btn admin-only" onclick="addProfile('career')">＋ 職歴追加</button>
+      <button class="btn admin-only" onclick="exportAll()">エクスポート</button>
+      <label class="btn admin-only">インポート<input type="file" accept="application/json" hidden onchange="importAll(this.files[0])"></label>
+      <small class="muted">学校歴は researchmap 形式で表示・編集できます（学位は表示しません）。</small>
+    </div>
+    <div class="profile">
+      <div class="h2" style="margin-top:0">学歴</div>
+      <div id="edu" class="timeline"></div>
+      <div class="h2">職歴</div>
+      <div id="car" class="timeline"></div>
+    </div>
+  </section>
+
+  <section style="margin-top:18px">
+    <h2 id="papers">論文</h2>
+    <div class="tools">
+      <button class="btn admin-only" onclick="addItem('paper')">＋ 論文追加</button>
+      <button class="btn" onclick="clearSearch()">全表示</button>
+    </div>
+    <div id="grid-paper" class="grid"></div>
+  </section>
+
+  <section style="margin-top:18px">
+    <h2 id="talks">口頭発表</h2>
+    <div class="tools">
+      <button class="btn admin-only" onclick="addItem('talk')">＋ 口頭発表追加</button>
+      <button class="btn" onclick="clearSearch()">全表示</button>
+    </div>
+    <div id="grid-talk" class="grid"></div>
+  </section>
+
+ <!-- 学術貢献活動 -->
+<section style="margin-top:18px">
+  <h2 id="academic">学術貢献活動</h2>
+  <div class="tools">
+    <button class="btn admin-only" onclick="addActivity('academic')">＋ 学術貢献活動</button>
+    <button class="btn" onclick="clearSearch()">全表示</button>
+  </div>
+  <div id="cards-academic" class="ncards"></div>
+</section>
+
+<!-- 社会貢献活動 -->
+<section style="margin-top:18px">
+  <h2 id="social">社会貢献活動</h2>
+  <div class="tools">
+    <button class="btn admin-only" onclick="addActivity('social')">＋ 社会貢献活動</button>
+    <button class="btn" onclick="clearSearch()">全表示</button>
+  </div>
+  <div id="cards-social" class="ncards"></div>
+</section>
+
+<!-- 委員 -->
+<section style="margin-top:18px">
+  <h2 id="committee">委員</h2>
+  <div class="tools">
+    <button class="btn admin-only" onclick="addActivity('committee')">＋ 委員</button>
+    <button class="btn" onclick="clearSearch()">全表示</button>
+  </div>
+  <div id="cards-committee" class="ncards"></div>
+</section>
+
+<!-- 研究費 -->
+<section style="margin-top:18px">
+  <h2 id="activities">研究費</h2>
+  <div class="tools">
+    <button class="btn admin-only" onclick="addActivity('grant')">＋ 研究費</button>
+    <button class="btn" onclick="clearSearch()">全表示</button>
+  </div>
+  <div id="cards-grant" class="ncards"></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-links" id="footer-links"></div>
+  <div class="container copyright">© 2025 Mao Nagamine</div>
+</footer>
+
+<script>
+const LS='hist_items_v7';
+const load=()=>JSON.parse(localStorage.getItem(LS)||'[]');
+const save=(arr)=>localStorage.setItem(LS, JSON.stringify(arr));
+
+function doSearch(){ sessionStorage.setItem('hist_q',(document.getElementById('q')?.value||'').trim().toLowerCase()); render(); }
+function clearSearch(){ sessionStorage.removeItem('hist_q'); const q=document.getElementById('q'); if(q) q.value=''; render(); }
+function filterByQuery(list){
+  const q=(sessionStorage.getItem('hist_q')||'').toLowerCase();
+  if(!q) return list;
+  return list.filter(x=>[x.title,x.date,x.venue,x.loc,x.url,x.note,JSON.stringify(x.edu||{})].join(' ').toLowerCase().includes(q));
+}
+
+function addProfile(type){
+  const title=prompt(type==='education'?'学校名/学部・学科など（自由記述。後で詳細入力可）':'役職/所属'); if(title===null) return;
+  const date=prompt('年月（例：2012-04 〜 2016-03）'); if(date===null) return;
+  const venue=prompt('メモ用（任意。空でOK）',''); if(venue===null) return;
+  const note=prompt('メモ（任意）','');
+  const arr=load(); const id=crypto.randomUUID();
+  const base={id,type,title,date,venue,note};
+  if(type==='education') base.edu={};
+  arr.push(base); save(arr); render();
+}
+function editProfile(id){
+  const arr=load(); const it=arr.find(x=>x.id===id); if(!it) return;
+  const title=prompt('学校名/学部・学科など（自由記述）', it.title||''); if(title===null) return;
+  const date=prompt('年月（例：2012-04 〜 2016-03）', it.date||''); if(date===null) return;
+  const venue=prompt('メモ用（任意）', it.venue||''); if(venue===null) return;
+  const note=prompt('メモ', it.note||''); if(note===null) return;
+  Object.assign(it,{title,date,venue,note}); save(arr); render();
+}
+function editEdu(id){
+  const arr=load(); const it=arr.find(x=>x.id===id); if(!it) return;
+  if(!it.edu) it.edu={};
+  const e=it.edu;
+  const start=prompt('開始年月（YYYY-MM）', e.start||''); if(start===null) return;
+  const end=prompt('終了年月（YYYY-MM、在学中は空）', e.end||''); if(end===null) return;
+  const school=prompt('学校名', e.school||it.title||''); if(school===null) return;
+  const faculty=prompt('学部 / 研究科（任意）', e.faculty||''); if(faculty===null) return;
+  const department=prompt('学科 / 専攻（任意）', e.department||''); if(department===null) return;
+  const course=prompt('課程（例：小学/中学/高校/大学/修士/博士 など、任意）', e.course||''); if(course===null) return;
+  const major=prompt('専攻（任意）', e.major||''); if(major===null) return;
+  it.edu={start,end,school,faculty,department,course,major};
+  save(arr); render();
+}
+function delById(id){ if(!confirm('削除しますか？')) return; save(load().filter(x=>x.id!==id)); render(); }
+
+function addItem(type){
+  const title=prompt(type==='paper'?'論文タイトル':'発表タイトル'); if(title===null) return;
+  const date=prompt('日付（YYYY-MM / YYYY-MM-DD）'); if(date===null) return;
+  const venue=prompt(type==='paper'?'掲載誌':'会議名/イベント'); if(venue===null) return;
+  const loc=prompt('場所（任意）',''); if(loc===null) return;
+  const url=prompt('URL / DOI（任意）',''); if(url===null) return;
+  const thumb=prompt('サムネURL（任意。画像リンク）','');
+  const note=prompt('メモ（任意）','');
+  const id=crypto.randomUUID();
+  const arr=load(); arr.push({id,type,title,date,venue,loc,url,thumb,note,specs:[]}); save(arr); render();
+}
+function editItem(id){
+  const arr=load(); const it=arr.find(x=>x.id===id); if(!it) return;
+  const type=prompt('カテゴリ（paper / talk）', it.type); if(type===null) return;
+  const title=prompt('タイトル', it.title||''); if(title===null) return;
+  const date=prompt('日付', it.date||''); if(date===null) return;
+  const venue=prompt('掲載誌/会議名', it.venue||''); if(venue===null) return;
+  const loc=prompt('場所', it.loc||''); if(loc===null) return;
+  const url=prompt('URL / DOI', it.url||''); if(url===null) return;
+  const thumb=prompt('サムネURL', it.thumb||''); if(thumb===null) return;
+  const note=prompt('メモ', it.note||''); if(note===null) return;
+  Object.assign(it,{type,title,date,venue,loc,url,thumb,note}); save(arr); render();
+}
+
+function addActivity(type){
+  const title=prompt(type==='grant'?'研究費名/課題名':'タイトル'); if(title===null) return;
+  const date=prompt('日付/年度'); if(date===null) return;
+  const venue=prompt(type==='committee'?'委員会/学会名':'主催/媒体/採択元（任意）',''); if(venue===null) return;
+  const loc=prompt('場所（任意）',''); if(loc===null) return;
+  const url=prompt('URL（任意）',''); if(url===null) return;
+  const thumb=prompt('写真URL（任意）','');
+  const note=prompt('メモ（任意）','');
+  const id=crypto.randomUUID();
+  const base={id,type,title,date,venue,loc,url,thumb,note};
+  if(type==='grant') base.usage=[];
+  const arr=load(); arr.push(base); save(arr); render();
+}
+function editActivity(id){
+  const arr=load(); const it=arr.find(x=>x.id===id); if(!it) return;
+  const type=prompt('カテゴリ（academic/social/committee/grant）', it.type); if(type===null) return;
+  const title=prompt('タイトル', it.title||''); if(title===null) return;
+  const date=prompt('日付/年度', it.date||''); if(date===null) return;
+  const venue=prompt('主催/媒体/採択元', it.venue||''); if(venue===null) return;
+  const loc=prompt('場所', it.loc||''); if(loc===null) return;
+  const url=prompt('URL', it.url||''); if(url===null) return;
+  const thumb=prompt('写真URL', it.thumb||''); if(thumb===null) return;
+  const note=prompt('メモ', it.note||''); if(note===null) return;
+  Object.assign(it,{type,title,date,venue,loc,url,thumb,note}); save(arr); render();
+}
+
+function exportAll(){
+  const blob=new Blob([JSON.stringify({items:load()},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='history_v7_school_history.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+async function importAll(file){
+  const text=await file.text(); const obj=JSON.parse(text);
+  if(obj.items) localStorage.setItem(LS, JSON.stringify(obj.items));
+  render();
+}
+
+function eduRowHTML(x){
+  const e=x.edu||{};
+  const period = [e.start||'', e.end?('〜 '+e.end): (e.start?'〜 現在':'')].filter(Boolean).join(' ');
+  const line1 = [e.faculty||'', e.department||''].filter(Boolean).join(' ');
+  const line2 = [e.course?('課程：'+e.course):'', e.major?('専攻：'+e.major):''].filter(Boolean).join('　');
+  return `<div class="row">
+    <div class="col-date">${period||x.date||''}</div>
+    <div class="col-body">
+      <div class="title">${e.school||x.title||''}</div>
+      ${line1?`<div class="sub">${line1}</div>`:''}
+      ${line2?`<div class="sub">${line2}</div>`:''}
+      ${x.note?`<div class="sub" style="white-space:pre-line">${x.note}</div>`:''}
+      <div class="ops admin-only block">
+        <button class="btn" onclick="editProfile('${x.id}')">簡易編集</button>
+        <button class="btn" onclick="editEdu('${x.id}')">学校歴の詳細編集</button>
+        <button class="btn" onclick="delById('${x.id}')">削除</button>
+      </div>
+    </div>
+  </div>`;
+}
+function carRowHTML(x){
+  return `<div class="row">
+    <div class="col-date">${x.date||''}</div>
+    <div class="col-body">
+      <div class="title">${x.title||''}</div>
+      <div class="sub">${x.venue||''}</div>
+      ${x.note?`<div class="sub" style="white-space:pre-line">${x.note}</div>`:''}
+      <div class="ops admin-only block">
+        <button class="btn" onclick="editProfile('${x.id}')">編集</button>
+        <button class="btn" onclick="delById('${x.id}')">削除</button>
+      </div>
+    </div>
+  </div>`;
+}
+function galleryCard(x){
+  return `<a class="card" href="item_detail.html?id=${x.id}">
+    <div class="thumb">${x.thumb?`<img src="${x.thumb}" alt="" style="width:100%;height:100%;object-fit:cover">`:'THUMB'}</div>
+    <div class="meta">
+      <div class="title">${x.title||''}</div>
+      <div class="caption">${(x.type==='paper'?'論文':'口頭発表')} ｜ ${x.date||''} ｜ ${x.venue||''}</div>
+      <div class="ops admin-only block" style="margin-top:6px">
+        <button class="btn" onclick="event.preventDefault(); editItem('${x.id}')">編集</button>
+        <button class="btn" onclick="event.preventDefault(); delById('${x.id}')">削除</button>
+      </div>
+    </div>
+  </a>`;
+}
+function ncard(x){
+  const href = (x.type==='grant')
+    ? `grant_detail.html?id=${x.id}`
+    : `activity_detail.html?id=${x.id}`;
+  return `<a class="ncard" href="${href}">
+    <div class="nthumb">${x.thumb?`<img src="${x.thumb}" alt="" style="width:100%;height:100%;object-fit:cover">`:'PHOTO'}</div>
+    <div class="nmeta">
+      <div class="title">${x.title||''}</div>
+      <div class="sub">${displayType(x.type)} ｜ ${x.date||''} ｜ ${x.venue||''} ${x.loc?('＠'+x.loc):''}</div>
+      ${x.url?`<div class="sub"><span style="text-decoration:underline">リンクあり</span></div>`:''}
+      ${x.note?`<div class="sub" style="white-space:pre-line">${x.note}</div>`:''}
+      <div class="ops admin-only block" style="margin-top:6px">
+        <button class="btn" onclick="event.preventDefault(); editActivity('${x.id}')">編集</button>
+        <button class="btn" onclick="event.preventDefault(); delById('${x.id}')">削除</button>
+      </div>
+    </div>
+  </a>`;
+}
+
+function displayType(t){ return ({academic:'学術貢献活動',social:'社会貢献活動',committee:'委員',grant:'研究費'})[t]||t; }
+
+function render(){
+  const arr=load();
+  const q=sessionStorage.getItem('hist_q')||''; const input=document.getElementById('q'); if(input) input.value=q;
+
+  const edu = filterByQuery(arr.filter(x=>x.type==='education')).sort((a,b)=> (a.edu?.start||a.date||'').localeCompare(b.edu?.start||b.date||''));
+  const car = filterByQuery(arr.filter(x=>x.type==='career')).sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+  document.getElementById('edu').innerHTML = edu.map(eduRowHTML).join('') || '<div class="sub" style="color:#777">まだありません</div>';
+  document.getElementById('car').innerHTML = car.map(carRowHTML).join('') || '<div class="sub" style="color:#777">まだありません</div>';
+
+  const papers = filterByQuery(arr.filter(x=>x.type==='paper')).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const talks  = filterByQuery(arr.filter(x=>x.type==='talk')).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  document.getElementById('grid-paper').innerHTML = papers.map(galleryCard).join('') || '<div class="sub" style="color:#777">まだありません。上の「＋ 論文追加」から。</div>';
+  document.getElementById('grid-talk').innerHTML  = talks.map(galleryCard).join('')  || '<div class="sub" style="color:#777">まだありません。上の「＋ 口頭発表追加」から。</div>';
+
+  // 4カテゴリに分けて並べ替え（新しい日付優先）
+const acads   = filterByQuery(arr.filter(x=>x.type==='academic')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+const socials = filterByQuery(arr.filter(x=>x.type==='social')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+const comms   = filterByQuery(arr.filter(x=>x.type==='committee')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+const grants  = filterByQuery(arr.filter(x=>x.type==='grant')).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const emptyMsg = (t)=>`<div class="sub" style="color:#777">まだありません。上の「＋ ${t}」から。</div>`;
+document.getElementById('cards-academic').innerHTML  = acads.map(ncard).join('')   || emptyMsg('学術貢献活動');
+document.getElementById('cards-social').innerHTML    = socials.map(ncard).join('') || emptyMsg('社会貢献活動');
+document.getElementById('cards-committee').innerHTML = comms.map(ncard).join('')   || emptyMsg('委員');
+document.getElementById('cards-grant').innerHTML     = grants.map(ncard).join('')  || emptyMsg('研究費');
+
+}
+
+// Footer links
+const FOOTER_LINKS = [
+  {label:'ホーム', href:'index.html'},
+  {label:'履歴', href:'history.html'},
+  {label:'取得単位', href:'units.html'},
+  {label:'論文のコメント', href:'comments.html'},
+  {label:'アルバム', href:'albums.html'},
+  {label:'researchmap', href:'https://researchmap.jp/nagamine_mao', target:'_blank'},
+  {label:'Facebook', href:'https://www.facebook.com/mao.nagamine.77/', target:'_blank'},
+  {label:'X (Twitter)', href:'https://x.com/sekibun_king', target:'_blank'},
+  {label:'Instagram', href:'https://www.instagram.com/m_nagamine/'},
+  {label:'FANZA', href:'https://video.dmm.co.jp/av/'},
+  {label:'お問い合わせ', href:'mailto:nagamine.mao.d9@elms.hokudai.ac.jp'},
+  {label:'リンク集', href:'links.html'}
+];
+function renderFooter(){
+  const nav = document.getElementById('footer-links');
+  if(!nav) return;
+  nav.innerHTML = FOOTER_LINKS.map(l=>{
+    const t=l.target?` target="${l.target}" rel="noopener"`:'';
+    return `<a href="${l.href}"${t}>${l.label}</a>`;
+  }).join('<span class="sep">｜</span>');
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  render();                  // カード（論文・発表など）
+  renderHomePhotoPortrait(); // 右側の縦写真（home:true の先頭1枚）
+});
+</script>
+<script>
+// --- 履歴ページ 検索 ---
+function doSearch(){
+  const q=(document.getElementById('q')?.value||'').trim().toLowerCase();
+  sessionStorage.setItem('site_q', q);
+  applySearch(q);
+}
+function clearSearch(){
+  sessionStorage.removeItem('site_q');
+  const i=document.getElementById('q'); if(i) i.value='';
+  applySearch('');
+}
+function applySearch(q){
+  // 学校歴・職歴・論文・口頭発表・活動カードをまとめて対象に
+  const targets = document.querySelectorAll(
+    '#edu .row, #car .row, #grid-paper .card, #grid-talk .card, #cards-acts .ncard'
+  );
+  let any=false;
+  targets.forEach(el=>{
+    const ok = !q || el.textContent.toLowerCase().includes(q);
+    el.style.display = ok ? '' : 'none';
+    any = any || ok;
+  });
+  const msgId='search-empty';
+  document.getElementById(msgId)?.remove();
+  if(!any){
+    const d=document.createElement('div');
+    d.id=msgId;
+    d.style.cssText='margin:8px 0;padding:10px;border:1px dashed #e8e8e8;background:#fff;color:#666';
+    d.textContent = `「${q}」は見つかりませんでした`;
+    document.querySelector('main')?.prepend(d);
+  }
+}
+// 初期適用
+document.addEventListener('DOMContentLoaded', ()=>{
+  const q=sessionStorage.getItem('site_q')||'';
+  const i=document.getElementById('q'); if(i) i.value=q;
+  applySearch(q);
+});
+</script>
+
+
+<script>
+(function(){
+  const p=new URLSearchParams(location.search);
+  const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+               || location.protocol==='file:'
+               || p.get('admin')==='1'
+               || localStorage.getItem('admin')==='1';
+  if(isLocal) document.documentElement.classList.add('is-admin');
+  // Ctrl+Shift+E で切替
+  addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='e'){
+      const on=localStorage.getItem('admin')==='1';
+      localStorage.setItem('admin', on?'0':'1'); location.reload();
+    }
+  });
+})();
+</script>
+
+</body></html>

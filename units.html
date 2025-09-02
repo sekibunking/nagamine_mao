@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>取得済み単位</title>
+<style>
+:root{--brand:#e60033;--ink:#222;--muted:#666;--line:#e8e8e8;--bg:#f6f7f8;--card:#fff;--gap:12px;--star:#FFC800;--shadow:0 4px 14px rgba(0,0,0,.06);--w-kind:360px}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--ink);font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",sans-serif}
+a{color:inherit;text-decoration:none}.container{max-width:1200px;margin:0 auto;padding:0 14px}
+header.site{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--brand)}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#ff4a6e,var(--brand))}
+.search{flex:1;display:flex;gap:8px}.search input{flex:1;height:40px;border:1px solid var(--line);border-radius:999px;padding:0 44px 0 14px}
+.search .go{margin-left:-42px;width:36px;height:36px;border-radius:50%;border:0;background:var(--brand);cursor:pointer}
+
+/* 検索UI（ホームと同じルックに） */
+.search{display:flex;gap:8px}
+.search input{flex:1;height:42px;border:1px solid var(--line);border-radius:999px;padding:0 14px}
+.search .btn-search{height:42px;border-radius:999px;border:0;background:var(--brand);color:#fff;padding:0 16px;cursor:pointer}
+.search .btn-clear{height:42px;border-radius:999px;border:1px solid var(--line);background:#fff;padding:0 16px;cursor:pointer}
+
+/* もし前の赤い丸ボタン .go がある場合、無効化するなら… */
+.search .go{display:none}
+
+
+.actions{display:flex;gap:8px}.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+nav.primary{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.navwrap{display:flex;gap:8px;overflow:auto;padding:8px 0}.chip{white-space:nowrap;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff}
+.chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+main.container{margin:16px auto}.layout{display:grid;grid-template-columns:1fr 300px;gap:16px}
+@media (max-width:1000px){.layout{grid-template-columns:1fr}}
+.aside{position:sticky;top:86px;height:fit-content}.box{background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px;box-shadow:var(--shadow)}
+section{margin:24px 0}section h3{margin:0 0 10px;font-size:1.05rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:var(--shadow)}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:780px;background:#fff;table-layout:fixed}
+th,td{padding:10px;border-bottom:1px solid var(--line)}thead th{position:sticky;top:0;background:#fafafa;text-align:left}
+tbody tr:hover{background:#fcfcfc}
+tbody tr[draggable="true"]{cursor:grab}
+tbody tr.dragging{opacity:.6;outline:2px dashed var(--brand)}
+/* 区分列は折り返し可・広め */
+table td:nth-child(2), table th:nth-child(2){white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+.note-text{white-space:pre-line}
+.ranking{display:grid;gap:10px}.rankitem{display:grid;grid-template-columns:42px 1fr 88px;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px;box-shadow:var(--shadow)}
+.ranknum{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800}
+.rankmeta .title{font-weight:700;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+.rankprice{color:var(--brand);font-weight:800;text-align:right}
+footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}.copyright{border-top:1px solid var(--line);color:#777;padding:12px 0;font-size:.88rem}
+
+
+.admin-only { display:none !important; }
+.is-admin .admin-only { display: initial !important; }
+.is-admin .admin-only.block { display:block !important; }
+</style>
+</head><body>
+<header class="site">
+  <div class="container header-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>長峰実央</span></a>
+ <form class="search" onsubmit="event.preventDefault(); doSearch()">
+  <input id="q" placeholder="検索（科目名／年度／学期／備考 など）" aria-label="検索">
+  <button type="submit" class="btn-search">検索</button>
+  <button type="button" class="btn-clear" onclick="clearSearch()">クリア</button>
+</form>
+
+    <div class="actions">
+      <a class="btn" href="history.html">履歴</a>
+      <a class="btn" href="units.html">取得済み単位</a>
+      <a class="btn" href="comments.html">論文のコメント</a>
+      <a class="btn" href="comments.html">アルバム</a>
+      <a class="btn primary" href="links.html">リンク集</a>
+    </div>
+  </div>
+  <nav class="primary"><div class="container navwrap">
+    <a class="chip" href="index.html">ホーム</a><a class="chip active" href="units.html">単位</a><a class="chip" href="history.html">履歴</a><a class="chip" href="comments.html">論文のコメント</a>
+  </div></nav>
+
+  
+</header>
+
+<main class="container">
+  <div class="layout">
+    <div>
+      <section>
+        <h3>取得済み単位一覧</h3>
+        <div class="tools">
+          <button class="btn admin-only" onclick="addUnit()">＋ 単位追加</button>
+          <button class="btn admin-only" onclick="exportUnits()">エクスポート</button>
+          <label class="btn admin-only">インポート<input type="file" accept="application/json" hidden onchange="importUnits(this.files[0])"></label>
+          <small style="color:#666">行はドラッグ＆ドロップや ↑↓ で並び替えできます（※検索中は不可）</small>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <colgroup>
+              <col style="width:72px">                 <!-- 年度 -->
+              <col style="width:100px">       <!-- 区分 -->
+              <col>                                    <!-- 授業名 -->
+              <col style="width:72px">                 <!-- 単位 -->
+              <col style="width:72px">                 <!-- 成績 -->
+              <col style="width:240px">                <!-- 備考＋操作 -->
+            </colgroup>
+            <thead><tr><th>年度</th><th>区分</th><th>授業名</th><th>単位</th><th>成績</th><th>備考 / 操作</th></tr></thead>
+            <tbody id="tbody"></tbody>
+            <tfoot><tr><th colspan="3" style="text-align:right">合計</th><th id="total">—</th><th colspan="2"></th></tr></tfoot>
+          </table>
+        </div>
+        <div id="units-count" style="color:#666;margin:8px 0"></div>
+        <p class="muted">※ 上の検索でこの表も絞り込みできます。</p>
+      </section>
+    </div>
+    <aside class="aside">
+      <div class="box">
+        <h3 style="margin:0 0 10px">区分・年度ランキング</h3>
+        <div id="units-stats" class="ranking"></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer><div class="container copyright">© 2025 Mao Nagamine</div></footer>
+
+<script>
+// ---- ストレージ
+const LS_MANUAL = 'units_manual_v1';      // 既定行の単位/成績/備考/名前(override)
+const LS_EXTRA  = 'units_extra_v1';       // 追加したカスタム行
+const LS_HIDDEN = 'units_hidden_v1';      // 既定行の非表示リスト
+const LS_ORDER  = 'units_order_v1';       // 表示順（built/custom混在）
+
+const loadManual = () => JSON.parse(localStorage.getItem(LS_MANUAL) || '{}');
+const saveManual = (obj) => localStorage.setItem(LS_MANUAL, JSON.stringify(obj));
+const loadExtra  = () => JSON.parse(localStorage.getItem(LS_EXTRA)  || '[]');
+const saveExtra  = (arr) => localStorage.setItem(LS_EXTRA, JSON.stringify(arr));
+const loadHidden = () => new Set(JSON.parse(localStorage.getItem(LS_HIDDEN) || '[]'));
+const saveHidden = (set) => localStorage.setItem(LS_HIDDEN, JSON.stringify([...set]));
+const loadOrder  = () => JSON.parse(localStorage.getItem(LS_ORDER)  || '[]');
+const saveOrder  = (arr) => localStorage.setItem(LS_ORDER, JSON.stringify(arr));
+
+// ---- ユーティリティ
+const builtId = (year,kind,name) => `${year}||${kind}||${name}`;
+const customId = (id) => `custom:${id}`;
+const stripCustom = (s) => (s||'').startsWith('custom:') ? s.slice(7) : s;
+
+// ---- 編集（既定行 or 追加行 両対応／授業名も変更可）
+function editRow(btn){
+  const tr = btn.closest('tr');
+  const type = tr.dataset.type; // 'built' or 'custom'
+  if(type==='custom'){
+    const full = tr.dataset.id;            // "custom:xxxx"
+    const id = stripCustom(full);          // "xxxx"
+    const arr = loadExtra();
+    const it = arr.find(x=>x.id===id);
+    if(!it) return;
+    const year = prompt('年度', it.year||''); if(year===null) return;
+    const kind = prompt('区分', it.kind||''); if(kind===null) return;
+    const name = prompt('授業名（変更可）', it.name||''); if(name===null) return;
+    const credits = prompt('単位', it.credits||''); if(credits===null) return;
+    const grade   = prompt('成績（例: A+ / A / B）', it.grade||''); if(grade===null) return;
+    const note    = prompt('備考（任意）', it.note||''); if(note===null) return;
+    Object.assign(it,{year,kind,name,credits,grade,note});
+    saveExtra(arr);
+  }else{
+    const key = tr.dataset.key;           // 固有キー（オリジナル）
+    const M = loadManual();
+    const now  = M[key] || {};
+    const nowName = now.name || tr.children[2].dataset.origName || tr.children[2].textContent.trim();
+    const nowCr = tr.children[3].textContent.trim();
+    const nowGr = tr.children[4].textContent.trim();
+    const nowNt = tr.querySelector('.note-text')?.textContent.trim() || '';
+    const name = prompt('授業名（変更可）', nowName); if(name===null) return;
+    const cr = prompt('単位数（例: 2）', nowCr); if (cr === null) return;
+    const gr = prompt('成績（例: A+ / A / B）', nowGr); if (gr === null) return;
+    const nt = prompt('備考', nowNt); if (nt === null) return;
+
+    const payload = {credits:(cr||'').trim(), grade:(gr||'').trim(), note:(nt||'').trim()};
+    if(name.trim() && name.trim() !== nowName){ payload.name = name.trim(); } // 名前の上書き
+    if(!payload.credits && !payload.grade && !payload.note && !payload.name){ delete M[key]; }
+    else { M[key] = {...now, ...payload}; }
+    saveManual(M);
+  }
+  renderTable();
+}
+// ---- 削除（既定行は“非表示”、追加行は完全削除）
+function deleteRow(btn){
+  const tr = btn.closest('tr');
+  const type = tr.dataset.type;
+  if(type==='custom'){
+    if(!confirm('この行を削除しますか？')) return;
+    const id = stripCustom(tr.dataset.id);
+    const arr = loadExtra().filter(x=>x.id!==id);
+    saveExtra(arr);
+    // 順序からも除去
+    const order = loadOrder().filter(x=>x !== customId(id));
+    saveOrder(order);
+  }else{
+    if(!confirm('この既定の行を非表示にしますか？（後で「非表示を解除」で戻せます）')) return;
+    const hidden = loadHidden();
+    hidden.add(tr.dataset.key);
+    saveHidden(hidden);
+    // 順序からも除去
+    const order = loadOrder().filter(x=>x !== tr.dataset.id);
+    saveOrder(order);
+  }
+  renderTable();
+}
+function resetHidden(){
+  if(!confirm('非表示リストをすべて解除しますか？')) return;
+  localStorage.removeItem(LS_HIDDEN);
+  renderTable();
+}
+// ---- 追加（※一番下に追加）
+function addUnit(){
+  const year = prompt('年度（例: 2023）'); if(year===null) return;
+  const kind = prompt('区分（例: 前期 / 後期 / 学部開講科目など）'); if(kind===null) return;
+  const name = prompt('授業名'); if(name===null) return;
+  const credits = prompt('単位（数値・任意）',''); if(credits===null) return;
+  const grade   = prompt('成績（例: A+ / A / B）',''); if(grade===null) return;
+  const note    = prompt('備考（任意）',''); if(note===null) return;
+  const arr = loadExtra();
+  const id = crypto.randomUUID();
+  arr.push({id, year:year.trim(), kind:kind.trim(), name:name.trim(), credits:(credits||'').trim(), grade:(grade||'').trim(), note:(note||'').trim()}); // ← 末尾に追加
+  saveExtra(arr);
+  // order も末尾に追加
+  const order = loadOrder();
+  order.push(customId(id));
+  saveOrder(order);
+  renderTable();
+}
+
+// ---- 並び替え（ボタン / D&D）
+function moveRow(btn, dir){
+  const tr = btn.closest('tr');
+  const id = tr.dataset.id;
+  const order = loadOrder();
+  const i = order.indexOf(id);
+  if(i<0) return;
+  const j = i + dir;
+  if(j<0 || j>=order.length) return;
+  const [it] = order.splice(i,1);
+  order.splice(j,0,it);
+  saveOrder(order);
+  renderTable();
+}
+
+
+// D&D
+let dragId = null;
+function onDragStart(e){
+  const q = (sessionStorage.getItem('site_q')||'').trim();
+  if(q){
+    alert('検索中は並び替えできません。先にクリアしてください。');
+    e.preventDefault(); return;
+  }
+  const tr = e.currentTarget;
+  dragId = tr.dataset.id;
+  tr.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  dragId = null;
+  commitOrderFromDOM();
+}
+function onDragOver(e){
+  e.preventDefault();
+  const tb = document.getElementById('tbody');
+  const after = getAfterRow(tb, e.clientY);
+  const dragging = tb.querySelector('.dragging');
+  if(!dragging) return;
+  if(after == null){ tb.appendChild(dragging); }
+  else{ tb.insertBefore(dragging, after); }
+}
+function getAfterRow(container, y){
+  const els = [...container.querySelectorAll('tr:not(.dragging)')];
+  return els.reduce((closest, el)=>{
+    const box = el.getBoundingClientRect();
+    const offset = y - (box.top + box.height/2);
+    if(offset < 0 && offset > closest.offset){
+      return {offset, element: el};
+    }else{
+      return closest;
+    }
+  }, {offset: Number.NEGATIVE_INFINITY}).element;
+}
+function commitOrderFromDOM(){
+  const ids = [...document.querySelectorAll('#tbody tr')].map(el=>el.dataset.id);
+  if(ids.length){
+    saveOrder(ids);
+    recomputeTotalsAndStats();
+  }
+}
+
+// ---- 検索
+function doSearch(){const q=(document.getElementById('q')?.value||'').trim().toLowerCase();sessionStorage.setItem('site_q',q);applySearch(q)}
+function clearSearch(){sessionStorage.removeItem('site_q');const i=document.getElementById('q');if(i) i.value='';applySearch('');updateUnitsCount();}
+function applySearch(q){
+  const rows=document.querySelectorAll('#tbody tr');let any=false;
+  rows.forEach(tr=>{const ok=!q||tr.textContent.toLowerCase().includes(q); tr.style.display=ok?'':'none'; any=any||ok;});
+  const msgId='search-empty';document.getElementById(msgId)?.remove();
+  if(!any){const d=document.createElement('div');d.id=msgId;d.style.color='#666';d.textContent=`「${q}」は見つかりませんでした`;document.querySelector('main').prepend(d);}
+  updateUnitsCount();
+}
+
+// ---- 合計＆ランキング
+function recomputeTotalsAndStats(){
+  const rows = [...document.querySelectorAll('#tbody tr')];
+  const total = rows.reduce((a,tr)=> a + (parseFloat(tr.children[3].textContent)||0), 0);
+  document.getElementById('total').textContent = total;
+  const byType={}, byYear={};
+  rows.forEach(tr=>{
+    const y = tr.children[0].textContent.trim();
+    const k = tr.children[1].textContent.trim();
+    const c = parseFloat(tr.children[3].textContent)||0;
+    byYear[y]=(byYear[y]||0)+c; byType[k]=(byType[k]||0)+c;
+  });
+  const rankFn = (typeof rank==='function') ? rank : (obj)=>Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  const el=document.getElementById('units-stats');
+  el.innerHTML =
+    '<div style="color:#666;margin-bottom:6px">総単位：<b>'+ total +'</b></div>'+
+    rankFn(byType).map(([k,v],i)=>`<div class="rankitem"><div class="ranknum">${i+1}</div><div class="rankmeta"><div class="title">${k||'区分未設定'}</div></div><div class="rankprice">${v} 単位</div></div>`).join('')+
+    '<div style="height:8px"></div><h4 style="margin:6px 0 8px;font-size:1rem">年度別</h4>'+
+    rankFn(byYear).map(([k,v],i)=>`<div class="rankitem"><div class="ranknum">${i+1}</div><div class="rankmeta"><div class="title">${k||'年度不明'}</div></div><div class="rankprice">${v} 単位</div></div>`).join('');
+}
+function rank(obj){return Object.entries(obj).sort((a,b)=>b[1]-a[1])}
+function updateUnitsCount(){
+  const rows=[...document.querySelectorAll('#tbody tr')];
+  const visible=rows.filter(tr=>tr.style.display!=='none').length;
+  const box=document.getElementById('units-count'); if(box) box.textContent=`表示 ${visible} / 総 ${rows.length}`;
+}
+
+// ---- 既定データ
+const DATA_UNITS = [
+  {year:"2018", kind:"前期", list:["キリスト教学A","英語リーディングⅠA","英語コミュニケーションⅠA","英語ライティングⅠA","論理学","心理学","数学入門演習","微分積分Ⅰ","線形代数Ⅰ","基礎物理学A"]},
+  {year:"2018", kind:"後期", list:["キリスト教学 B","英語リーディング ⅠB","英語コミュニケーション ⅠB","英語ライティング ⅠB","環境学","芸術と技術","微分積分Ⅱ","線形代数Ⅱ","コンピュータ演習A","人間システム工学概論"]},
+  {year:"2019", kind:"前期", list:["英語リーディング Ⅱ A","英語コミュニケーション Ⅱ A","英語ライティング Ⅱ A","基礎解析学Ⅰ","代数入門","数式処理演習Ⅰ","論理回路","生命科学Ⅰ","比較宗教思想論"]},
+  {year:"2019", kind:"後期", list:["英語リーディング ⅡB","英語コミュニケーション ⅡB","英語ライティング ⅡB","基礎解析学Ⅱ","関数論入門","集合と位相","幾何入門","確率統計入門","数式処理演習Ⅱ"]},
+  {year:"2020", kind:"既修得認定", list:["代数学・幾何学序論","基礎数学A","基礎数学B","基礎数学C","解析学基礎A","確率・統計入門","細胞生物学Ⅰ","力学Ⅰ"]},
+  {year:"2020", kind:"前期", list:["細胞生物学概論","代数学基礎","代数学基礎演習","幾何学基礎","幾何学基礎講究"]},
+  {year:"2020", kind:"後期", list:["ベクトル解析","生物多様性概論","基礎数学D","基礎数学D演習","解析学基礎B","解析学基礎演習B","代数学A","代数学演習"]},
+  {year:"2021", kind:"前期", list:["微分積分学続論","現代地球惑星科学概論１","代数学B","東北大学 保険数学","気象学"]},
+  {year:"2021", kind:"後期", list:["数学卒業研究","現代地球惑星科学概論 ２","古生物学"]},
+  {year:"2022", kind:"前期", list:["数学基礎研究Ⅰ","科学技術社会構成論Ⅰ","「理系のための」知っておきたい特許制度","脳科学入門Ⅰ：神経情報伝達","脳科学入門Ⅱ：脳の構造と機能","脳科学入門Ⅴ：脳解剖実習"]},
+  {year:"2022", kind:"後期", list:["数学基礎研究Ⅱ","数理科学概説（自然現象への数学的アプローチ）","代数学講義（テータ関数とその周辺）","数理解析学講義（数理生命科学）","多様性生物学概論","自然史科学特別講義Ⅱ（骨組成学的検討に基づく古生物学）","自然史科学特別講義Ⅳ（統計学と科学コミュニケーション(1)）","自然史科学特別講義Ⅳ（統計学と科学コミュニケーション(2)）","北海道サスティナブルワイン学"]},
+  {year:"2022", kind:"後期（学部）", list:["教職入門","特別な教育的ニーズへの理解と対応","教育方法論","進路指導論Ⅰ","進路指導論Ⅱ"]},
+  {year:"2023", kind:"前期", list:["数学基礎研究Ⅲ","代数学特論A（古典的不変式論）","代数学特論 B（古典的不変式論）","有機地球化学概論","有機地球化学特論","博物館コミュニケーション特論（学生発案型プロジェクトの企画・運営・評価）","自然史科学特別講義Ⅱ（地球環境史イベント解読）","SDGsワークショップ（日本航空株式会社）"]},
+  {year:"2023", kind:"前期（学部）", list:["体育学B（講義）","芸術学","博物館資料論","特別支援教育概論","惑星大気構造学","教育学","教育心理学","教科教育法（数学Ⅰ）","教科教育法（理科Ⅰ）","教育課程論","総合的な学習の時間の指導法","教科教育法（数学Ⅲ）","特別活動論","教育情報通信技術論"]},
+  {year:"2023", kind:"後期", list:["数学研究","数学基礎研究Ⅳ","修士論文演習","数理解析学講義（非線形数学（自己組織化の数理））","博物館コミュニケーション特論（ミュージアムグッズの開発と評価）","自然史科学特別講義Ⅱ（水質地球化学）","自然史科学特別講義Ⅳ（インストラクショナルデザイン(1)）","自然史科学特別講義Ⅳ（インストラクショナルデザイン(2)）","博物館学特別講義Ⅰ（学術標本・資料学）","教養深化特別講義Ⅰ","教養深化特別演習（基礎）Ⅴ","2050年の日本産業を考える～ありたき姿の実現に向けた構造転換と産業融合～","半導体に夢を持てるのか、輪になって躍ろう北海道！"]},
+  {year:"2023", kind:"後期（学部）", list:["博物館資料論"]},
+  {year:"2024", kind:"前期", list:["なし"]},
+  {year:"2024", kind:"後期", list:[]}
+];
+
+// ---- 表描画
+function collectRowsData(){
+  const M = loadManual();
+  const hidden = loadHidden();
+  const extra = loadExtra();
+  const rows = [];
+
+  // built
+  DATA_UNITS.forEach(g=>{
+    const kind = g.kind.replace(/\s*\(GPA[^)]*\)/,''); // 保険
+    g.list.forEach(name=>{
+      if(/なし/.test(name)) return;
+      const key = builtId(g.year, kind, name);
+      if(hidden.has(key)) return;
+      const manual = M[key] || {};
+      const displayName = manual.name || name;
+      rows.push({
+        id: key,
+        type:'built',
+        year:g.year, kind, name:displayName, origName:name,
+        credits: manual.credits||'', grade: manual.grade||'', note: manual.note||''
+      });
+    });
+  });
+
+  // custom
+  extra.forEach(it=>{
+    rows.push({
+      id: customId(it.id),
+      type:'custom',
+      year: it.year||'', kind: it.kind||'', name: it.name||'',
+      credits: it.credits||'', grade: it.grade||'', note: it.note||''
+    });
+  });
+
+  // apply order
+  const order = loadOrder();
+  if(order.length){
+    const pos = new Map(order.map((id,i)=>[id,i]));
+    rows.sort((a,b)=> (pos.has(a.id)?pos.get(a.id):1e9) - (pos.has(b.id)?pos.get(b.id):1e9) );
+  }
+  return rows;
+}
+
+function renderTable(){
+  const IS_ADMIN = document.documentElement.classList.contains('is-admin');
+  const tb = document.getElementById('tbody');
+  const rows = collectRowsData();
+
+  tb.innerHTML = rows.map(r=>`
+    <tr data-type="${r.type}" data-id="${r.id}" ${r.type==='built' ? `data-key="${r.id}"` : ''} draggable="${IS_ADMIN ? 'true' : 'false'}">
+      <td>${r.year}</td>
+      <td>${r.kind}</td>
+      <td data-orig-name="${r.origName||''}">${r.name}</td>
+      <td>${r.credits}</td>
+      <td>${r.grade}</td>
+      <td>
+        <span class="note-text">${r.note}</span>
+        <button type="button" class="btn admin-only" style="margin-left:6px" onclick="moveRow(this,-1)">↑</button>
+        <button type="button" class="btn admin-only" onclick="moveRow(this,1)">↓</button>
+        <button type="button" class="btn admin-only" onclick="editRow(this)">編集</button>
+        <button type="button" class="btn admin-only" onclick="deleteRow(this)">削除</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // D&D bind
+if (IS_ADMIN) {
+  tb.querySelectorAll('tr').forEach(tr=>{
+     tr.addEventListener('dragstart', onDragStart);
+     tr.addEventListener('dragend', onDragEnd);
+   });
+   tb.addEventListener('dragover', onDragOver);
+ }
+
+  recomputeTotalsAndStats();
+  const q = sessionStorage.getItem('site_q')||'';
+  const input = document.getElementById('q');
+  if (input) input.value = q;
+  if (q) applySearch(q); else updateUnitsCount();
+}
+
+// ---- エクスポート/インポート
+function exportUnits(){
+  const data = {
+    manual: loadManual(),
+    extra: loadExtra(),
+    hidden: [...loadHidden()],
+    order: loadOrder()
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='units_data.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+async function importUnits(file){
+  const text = await file.text();
+  const obj = JSON.parse(text);
+  if(obj.manual) saveManual(obj.manual);
+  if(obj.extra)  saveExtra(obj.extra);
+  if(obj.hidden) saveHidden(new Set(obj.hidden));
+  if(obj.order)  saveOrder(obj.order);
+  renderTable();
+}
+
+// ---- 初期描画
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderTable();
+});
+</script>
+<script>
+// --- 単位ページ 検索 (既存の applySearch をこの版で上書き) ---
+function applySearch(q){
+  // 各年度ブロック（.year）単位でフィルタ
+  const blocks = document.querySelectorAll('.year');
+  let any=false;
+  blocks.forEach(b=>{
+    const ok = !q || b.textContent.toLowerCase().includes(q);
+    b.style.display = ok ? '' : 'none';
+    any = any || ok;
+  });
+  const msgId='search-empty';
+  document.getElementById(msgId)?.remove();
+  if(!any){
+    const d=document.createElement('div'); d.id=msgId;
+    d.style.cssText='margin:8px 0;padding:10px;border:1px dashed #e8e8e8;background:#fff;color:#666';
+    d.textContent = `「${q}」は見つかりませんでした`;
+    document.querySelector('main')?.prepend(d);
+  }
+  // 件数表示などがある場合
+  if (typeof updateUnitsCount==='function') updateUnitsCount();
+}
+</script>
+<script>
+// === 単位：年度→学期の固定並び（安全版） ===
+
+// 学期の固定順（「既習得認定」「既修得認定」どちらでも同じ扱い）
+const TERM_ORDER = {
+  "既修得認定": 0,
+  "前期": 1,
+  "前期（学部）": 2,
+  "後期": 3,
+  "後期（学部）": 4
+};
+
+// 表記ゆれを吸収して正規化
+function normalizeTerm(text='') {
+  let s = String(text).trim();
+  s = s.replace(/\(/g,'（').replace(/\)/g,'）').replace(/\s+/g,'');
+  // 「既習得/既修得」ゆれ
+  if (/^既[修習]得認定$/.test(s)) s = '既修得認定';
+  if (s.includes('前期') && s.includes('学部')) return '前期（学部）';
+  if (s.includes('後期') && s.includes('学部')) return '後期（学部）';
+  if (s.includes('前期')) return '前期';
+  if (s.includes('後期')) return '後期';
+  return s;
+}
+const termRank = (t) => (t in TERM_ORDER ? TERM_ORDER[t] : 999);
+
+// 年度（数値）抽出：data-year 優先、なければ見出しから4桁推定
+function getYearNum(yearEl) {
+  const d = yearEl.getAttribute('data-year');
+  if (d && /^\d{4}$/.test(d)) return +d;
+  const t = (yearEl.querySelector('.year-title, h2, h3, header, .heading')?.textContent || yearEl.textContent || '').trim();
+  const m = t.match(/(19|20)\d{2}/);
+  return m ? +m[0] : 0;
+}
+
+// 学期テキスト：data-term 優先、なければ子見出しから推定
+function getTermText(termEl) {
+  const d = termEl.getAttribute('data-term');
+  if (d) return normalizeTerm(d);
+  const t = (termEl.querySelector('.term-title, h3, h4, .heading, legend')?.textContent || termEl.textContent || '');
+  return normalizeTerm(t);
+}
+
+// units-root 内の「年ブロック」を取得（.year or [data-year]）
+function getYearBlocks(root){
+  let years = Array.from(root.querySelectorAll(':scope > .year, :scope > [data-year]'));
+  if (!years.length) {
+    // 直下に無い構造のフォールバック：最初に見つかった親直下へ昇格
+    years = Array.from(root.querySelectorAll('.year, [data-year]'))
+                 .filter(el => root.contains(el));
+  }
+  return years;
+}
+
+// 年度内の「学期ブロック」を取得（.term or [data-term]）
+function getTermBlocks(yearEl){
+  let terms = Array.from(yearEl.querySelectorAll(':scope > .term, :scope > [data-term]'));
+  if (!terms.length) {
+    terms = Array.from(yearEl.querySelectorAll('.term, [data-term]'));
+  }
+  return terms;
+}
+
+// 並びを固定
+function fixUnitsOrder() {
+  const root = document.getElementById('units-root');
+  if (!root) return; // ラッパ必須にして安全化
+
+  // 1) 年度：新→旧に並べ替え（親は必ず root）
+  const years = getYearBlocks(root);
+  years.sort((a,b) => getYearNum(b) - getYearNum(a));
+  years.forEach(y => root.appendChild(y));
+
+  // 2) 各年度の中で学期を固定順に
+  years.forEach(y => {
+    const terms = getTermBlocks(y);
+    if (!terms.length) return;
+    terms.sort((a,b) => termRank(getTermText(a)) - termRank(getTermText(b)));
+    const parent = terms[0].parentElement;
+    terms.forEach(t => parent.appendChild(t));
+  });
+}
+
+// 初回＆他処理後に呼び出し
+document.addEventListener('DOMContentLoaded', fixUnitsOrder);
+// もし JS で行を追加する処理があるなら、追加の最後に fixUnitsOrder() をもう一度呼ぶと常に固定順になります。
+</script>
+
+<script>
+(function(){
+  const p=new URLSearchParams(location.search);
+  const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+               || location.protocol==='file:'
+               || p.get('admin')==='1'
+               || localStorage.getItem('admin')==='1';
+  if(isLocal) document.documentElement.classList.add('is-admin');
+  // Ctrl+Shift+E で切替
+  addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='e'){
+      const on=localStorage.getItem('admin')==='1';
+      localStorage.setItem('admin', on?'0':'1'); location.reload();
+    }
+  });
+})();
+</script>
+
+
+
+</body></html>

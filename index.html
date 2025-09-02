@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ホーム — 学校歴・職歴／論文・口頭発表・活動/研究費</title>
+<meta name="description" content="学校歴（researchmap形式）・職歴、論文・口頭発表、学術/社会貢献・委員・研究費の最新情報。">
+<style>
+:root{--brand:#e60033;--ink:#222;--muted:#666;--line:#e8e8e8;--bg:#f6f7f8;--card:#fff;--shadow:0 8px 24px rgba(0,0,0,.06)}
+*{box-sizing:border-box}html,body{margin:0}body{background:#f6f7f8;color:#222;font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",sans-serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 14px}
+header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--brand)}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#ff4a6e,var(--brand))}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.hero{background:#fff;border-bottom:1px solid var(--line)}
+.hero-inner{display:grid;grid-template-columns:1fr;gap:16px;align-items:center;padding:18px 0}
+h1{font-size:1.5rem;margin:0 0 8px}
+.lead{color:#555;margin:0 0 12px}
+.search{display:flex;gap:8px}
+.search input{flex:1;height:42px;border:1px solid var(--line);border-radius:999px;padding:0 14px}
+.search button{height:42px;border-radius:999px;border:0;background:var(--brand);color:#fff;padding:0 16px;cursor:pointer}
+.profile{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:12px}
+.timeline{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;align-items:flex-start}
+.date{flex:0 0 160px;color:#555}
+.body{flex:1}
+.title{font-weight:800}
+.sub{color:#666}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;background:#f0f0f0;display:grid;place-items:center;color:#999;font-weight:700}
+.meta{padding:10px;display:flex;flex-direction:column;gap:6px}
+.caption{color:#666;font-size:.92rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.ncards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:1000px){.ncards{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.ncards{grid-template-columns:1fr}}
+.ncard{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;display:flex;gap:12px;padding:10px}
+.nthumb{flex:0 0 140px;aspect-ratio:16/10;background:#f0f0f0;display:grid;place-items:center;color:#999;font-weight:700;border-radius:8px;overflow:hidden}
+.nmeta{flex:1;display:flex;flex-direction:column;gap:6px}
+/* footer links */
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0}
+.footer-links a{color:#444;text-decoration:none;padding:4px 6px;border-radius:8px}
+.footer-links a:hover{background:rgba(0,0,0,.05)}
+.footer-links .sep{color:#bbb}
+
+.photo-rail{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+@media (max-width:1100px){.photo-rail{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:720px){.photo-rail{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){.photo-rail{grid-template-columns:repeat(2,1fr)}}
+.photo-rail a{display:block;aspect-ratio:4/3;background:#f0f0f0;border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+.photo-rail img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* 2カラム：左にカード群、右に縦写真 */
+.row-2col.big{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+@media (max-width:900px){.row-2col.big{grid-template-columns:1fr}} /* スマホでは縦積み */
+
+.side-sticky{position:sticky;top:80px} /* ヘッダー高さに合わせて調整 */
+/* 右側の縦写真：写真の元比率そのまま表示 */
+.side-sticky{position:sticky; top:80px}
+.side-sticky .frame{
+  border:1px solid var(--line);
+  border-radius:10px;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:var(--shadow);
+  display:block;              /* ← グリッドやaspect-ratioは使わない */
+}
+.side-sticky .frame img{
+  width:100%;
+  height:auto;                /* ← 縦横比そのまま */
+  display:block;
+}
+.side-sticky .caption{margin-top:8px; font-size:.9rem; color:#666}
+
+
+/* 公開時は編集系UIを隠す */
+.admin-only{display:none!important;}
+/* 自分だけ見たい時は <html> に .is-admin を付けて表示 */
+.is-admin .admin-only{display:initial!important;}
+.is-admin .admin-only.block{display:block!important;}
+
+
+
+</style>
+
+
+
+</head><body>
+<header class="site">
+  <div class="container header-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>長峰実央</span></a>
+    <div class="actions" style="margin-left:auto">
+      <a class="btn" href="history.html">履歴</a>
+      <a class="btn" href="units.html">取得単位</a>
+      <a class="btn" href="comments.html">論文のコメント</a>
+      <a class="btn" href="albums.html">アルバム</a>
+      <a class="btn primary" href="links.html">リンク集</a>
+    </div>
+  </div>
+</header>
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <h1>学歴・職歴 & 研究ギャラリー</h1>
+      <p class="lead">学歴・職歴、論文・口頭発表、学術/社会貢献・委員・研究費の最新情報をまとめています。</p>
+      <form class="search" onsubmit="event.preventDefault(); goSearch()">
+        <input id="q" placeholder="検索（タイトル/会議名/掲載誌/所属/場所など）" aria-label="検索">
+        <button type="submit">検索</button>
+      </form>
+      <div style="margin-top:8px"><a class="more" href="history.html">→ 履歴ページへ</a></div>
+    </div>
+  </div>
+</section>
+<main class="container">
+  <div class="row-2col big">
+  <div class="col-left">
+  <section>
+    <div class="h2">最新の論文</div>
+    <div id="grid-paper" class="grid"></div>
+    <div style="margin-top:6px"><a class="more" href="history.html#papers">→ すべての論文を見る</a></div>
+  </section>
+  <section style="margin-top:18px">
+    <<a href="#" onclick="render();return false;" class="more admin-only">手動更新</a>
+    <div id="grid-talk" class="grid"></div>
+    <div style="margin-top:6px"><a class="more" href="history.html#talks">→ すべての口頭発表を見る</a></div>
+      </div>
+
+  <!-- 右側：縦写真（JSで埋める） -->
+  <aside id="home-photo-portrait" class="side-sticky" aria-label="ホーム指定の写真"></aside>
+</div>
+<!-- 追加：2カラムの親ラッパ終了 -->
+  </section>
+  <section style="margin-top:18px">
+    <div class="h2">学術/社会貢献・委員・研究費</div>
+    <div id="cards-acts" class="ncards"></div>
+    <div style="margin-top:6px"><a class="more" href="history.html#activities">→ 活動と研究費をすべて見る</a></div>
+  </section>
+</main>
+<footer>
+  <div class="container footer-links" id="footer-links"></div>
+  <div class="container copyright">© 2025 Mao Nagamine</div>
+</footer>
+<script>
+const LS='hist_items_v7';
+
+// ---- Home portrait uses the same IndexedDB as albums ----
+const _DBN='photos_db', _STN='images';
+function _openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(_DBN,1);
+    req.onupgradeneeded = ()=>{ const db=req.result; if(!db.objectStoreNames.contains(_STN)) db.createObjectStore(_STN,{keyPath:'id'}); };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror  = ()=> reject(req.error);
+  });
+}
+async function _dbGet(id){
+  const db = await _openDB();
+  return await new Promise((res,rej)=>{
+    const tx=db.transaction(_STN,'readonly'), st=tx.objectStore(_STN);
+    const rq=st.get(id); rq.onsuccess=()=>res(rq.result||null); rq.onerror=()=>rej(rq.error);
+  });
+}
+
+
+
+function toDateVal(s){
+  if(!s) return 0;
+  s = String(s).trim();
+  const m = s.match(/^(\d{4})[-\/.](\d{1,2})(?:[-\/.](\d{1,2}))?$/);
+  if(m){
+    const y=+m[1], mo=Math.max(1,Math.min(12,+m[2]))-1, d=m[3]?+m[3]:1;
+    const dt = new Date(y, mo, Math.max(1,Math.min(31,d)));
+    return dt.getTime()||0;
+  }
+  const t = Date.parse(s);
+  return isNaN(t)?0:t;
+}
+function load(){ return JSON.parse(localStorage.getItem(LS)||'[]'); }
+function goSearch(){ const v=(document.getElementById('q')?.value||'').trim(); sessionStorage.setItem('hist_q', v.toLowerCase()); location.href='history.html'; }
+function eduRow(x){
+  const e=x.edu||{};
+  const period=[e.start||'', e.end?('〜 '+e.end): (e.start?'〜 現在':'')].filter(Boolean).join(' ');
+  const line1=[e.faculty||'', e.department||''].filter(Boolean).join(' ');
+  const line2=[e.course?('課程：'+e.course):'', e.major?('専攻：'+e.major):''].filter(Boolean).join('　');
+  return `<div class="row">
+    <div class="date">${period||x.date||''}</div>
+    <div class="body">
+      <div class="title">${e.school||x.title||''}</div>
+      ${line1?`<div class="sub">${line1}</div>`:''}
+      ${line2?`<div class="sub">${line2}</div>`:''}
+    </div>
+  </div>`;
+}
+function carRow(x){
+  return `<div class="row">
+    <div class="date">${x.date||''}</div>
+    <div class="body">
+      <div class="title">${x.title||''}</div>
+      <div class="sub">${x.venue||''}</div>
+    </div>
+  </div>`;
+}
+function gcard(x){
+  return `<a class="card" href="item_detail.html?id=${x.id}">
+    <div class="thumb">${x.thumb?`<img src="${x.thumb}" alt="" style="width:100%;height:100%;object-fit:cover">`:'THUMB'}</div>
+    <div class="meta">
+      <div class="title">${x.title||''}</div>
+      <div class="caption">${(x.type==='paper'?'論文':'口頭発表')} ｜ ${x.date||''} ｜ ${x.venue||''}</div>
+    </div>
+  </a>`;
+}
+function displayType(t){ return disp(t); }
+function ncard(x){
+  const href = (x.type==='grant')
+    ? `grant_detail.html?id=${x.id}`
+    : `activity_detail.html?id=${x.id}`;
+  return `<a class="ncard" href="${href}">
+    <div class="nthumb">${x.thumb?`<img src="${x.thumb}" alt="" style="width:100%;height:100%;object-fit:cover">`:'PHOTO'}</div>
+    <div class="nmeta">
+      <div class="title">${x.title||''}</div>
+      <div class="sub">${displayType(x.type)} ｜ ${x.date||''} ｜ ${x.venue||''} ${x.loc?('＠'+x.loc):''}</div>
+      ${x.url?`<div class="sub"><span style="text-decoration:underline">リンクあり</span></div>`:''}
+      ${x.note?`<div class="sub" style="white-space:pre-line">${x.note}</div>`:''}
+      <div class="ops admin-only block" style="margin-top:6px">
+        <button class="btn" onclick="event.preventDefault(); editActivity('${x.id}')">編集</button>
+        <button class="btn" onclick="event.preventDefault(); delById('${x.id}')">削除</button>
+      </div>
+    </div>
+  </a>`;
+}
+
+function disp(t){ return ({academic:'学術貢献活動',social:'社会貢献活動',committee:'委員',grant:'研究費'})[t]||t; }
+function render(){
+  const a=load();
+  const papers=a.filter(x=>x.type==='paper').sort((a,b)=> toDateVal(b.date)-toDateVal(a.date)).slice(0,3);
+  const talks=a.filter(x=>x.type==='talk').sort((a,b)=> toDateVal(b.date)-toDateVal(a.date)).slice(0,3);
+  document.getElementById('grid-paper').innerHTML = papers.map(gcard).join('') || '<div class="sub" style="color:#777">論文は未登録です</div>';
+  document.getElementById('grid-talk').innerHTML  = talks.map(gcard).join('')  || '<div class="sub" style="color:#777">口頭発表は未登録です</div>';
+ // 学術/社会/委員/研究費をひとまとめで最新6件
+const acts = a
+  .filter(x => ['academic','social','committee','grant'].includes(x.type))
+  .sort((p,q)=> toDateVal(q.date) - toDateVal(p.date))
+  .slice(0,3);
+
+const actsEl = document.getElementById('cards-acts');
+if (actsEl) {
+  actsEl.innerHTML = acts.map(ncard).join('') ||
+    '<div class="sub" style="color:#777">まだありません。履歴ページから追加してください</div>';
+}
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  render();           // 論文・口頭発表・活動のカード
+  renderHomePhotos(); // ホームの写真レール（home:true のみ）
+});
+
+// 指定（home:true）の“先頭1枚”を右側の縦額縁に表示
+// 指定（home:true）の“先頭1枚”を右側の縦額縁に表示（IndexedDBから注入）
+async function renderHomePhotoPortrait(){
+  const box = document.getElementById('home-photo-portrait');
+  if(!box) return;
+
+  // localStorage からメタだけ読み、home:true の最新を選ぶ
+  const photos = JSON.parse(localStorage.getItem('photos_v1')||'[]')
+    .filter(x => x && x.home)  // ← 画像URLは見ない（IDBから取るため）
+    .sort((a,b)=> (b.updated||b.created||'').toString().localeCompare((a.updated||a.created||'').toString()));
+
+  const p = photos[0];
+  if(!p){
+    box.innerHTML = `<div class="frame"><span style="color:#777">アルバムで「ホームに表示」を1枚選んでください</span></div>`;
+    return;
+  }
+
+  // 先に枠だけ出す（レイアウト確定）
+  box.innerHTML = `
+    <a class="frame" href="albums.html#${encodeURIComponent(p.id)}">
+      <img alt="" id="__home_portrait_img" style="width:100%;height:auto;display:block">
+    </a>
+ `;
+
+  // IndexedDB から Blob を取り出して注入
+  try{
+    const rec  = await _dbGet(p.id);
+    const blob = rec?.thumb || rec?.full;
+    const img  = document.getElementById('__home_portrait_img');
+    if (blob && img){
+      img.src = URL.createObjectURL(blob);
+    } else {
+      img.replaceWith(document.createTextNode('NO IMAGE'));
+    }
+  }catch(_){
+    const img  = document.getElementById('__home_portrait_img');
+    if (img) img.replaceWith(document.createTextNode('NO IMAGE'));
+  }
+}
+
+
+// 初回ロードで必ず描画（カードとホーム写真）
+document.addEventListener('DOMContentLoaded', ()=>{
+  render();                  // 既存：カード描画
+  renderHomePhotoPortrait(); // 右側の写真（home:true の先頭1枚）
+});
+
+// アルバム保存をキャッチして再描画（photos_v1 / photos_v1__ts のどちらでも反応）
+window.addEventListener('storage', (e)=>{
+  if (e.key === 'photos_v1' || e.key === 'photos_v1__ts') {
+    renderHomePhotoPortrait();
+  }
+});
+
+// タブ復帰やフォーカスでも再描画（編集→戻った時に反映）
+document.addEventListener('visibilitychange', ()=>{
+  if (!document.hidden) renderHomePhotoPortrait();
+});
+window.addEventListener('focus', renderHomePhotoPortrait);
+
+
+// Footer links
+const FOOTER_LINKS = [
+  {label:'ホーム', href:'index.html'},
+  {label:'履歴', href:'history.html'},
+  {label:'取得単位', href:'units.html'},
+  {label:'論文のコメント', href:'comments.html'},
+  {label:'アルバム', href:'albums.html'},
+  {label:'researchmap', href:'https://researchmap.jp/nagamine_mao', target:'_blank'},
+  {label:'Facebook', href:'https://www.facebook.com/mao.nagamine.77/', target:'_blank'},
+  {label:'X (Twitter)', href:'https://x.com/sekibun_king', target:'_blank'},
+  {label:'Instagram', href:'https://www.instagram.com/m_nagamine/'},
+  {label:'FANZA', href:'https://video.dmm.co.jp/av/'},
+  {label:'お問い合わせ', href:'mailto:nagamine.mao.d9@elms.hokudai.ac.jp'},
+  {label:'リンク集', href:'links.html'}
+];
+function renderFooter(){
+  const nav = document.getElementById('footer-links');
+  if(!nav) return;
+  nav.innerHTML = FOOTER_LINKS.map(l=>{
+    const t=l.target?` target="${l.target}" rel="noopener"`:'';
+    return `<a href="${l.href}"${t}>${l.label}</a>`;
+  }).join('<span class="sep">｜</span>');
+}
+
+document.addEventListener('DOMContentLoaded', renderFooter);
+// 追加：ホームの写真レール描画
+function renderHomePhotos(){
+  const rail = document.getElementById('home-photos');
+  if(!rail) return;
+
+  const photos = JSON.parse(localStorage.getItem('photos_v1')||'[]');
+  // 指定された写真（home:true）のみ
+  const featured = photos.filter(x => x && x.home && (x.thumb || x.url));
+
+  // 指定が無ければ案内を表示（「最新」にはしない）
+  if(featured.length === 0){
+    rail.innerHTML = `<div class="sub" style="color:#777">
+      ホームに表示する写真が選ばれていません。<a href="albums.html">アルバム</a>で「ホームに表示」を押してください。
+    </div>`;
+    return;
+  }
+
+  // 並びは更新が新しい順（上位8枚）
+  const list = featured.slice().sort((a,b)=>{
+    const ua=(b.updated||b.created||'').toString();
+    const ub=(a.updated||a.created||'').toString();
+    return ua.localeCompare(ub);
+  }).slice(0,8);
+
+  rail.innerHTML = list.map(x=>{
+    const src = x.thumb || x.url;
+    const title = (x.title||'').replace(/"/g,'&quot;');
+    return `<a href="albums.html#${encodeURIComponent(x.id)}" title="${title}">
+              <img src="${src}" alt="${title}">
+            </a>`;
+  }).join('');
+}
+
+
+// 既存 render の最後で呼ぶ（論文/口頭発表/活動カード描画が済んだ後）
+const _renderOrig = render;
+render = function(){
+  _renderOrig();
+  renderHomePhotos();
+};
+
+
+
+
+</script>
+
+<script>
+(function(){
+  const p=new URLSearchParams(location.search);
+  const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+               || location.protocol==='file:'
+               || p.get('admin')==='1'
+               || localStorage.getItem('admin')==='1';
+  if(isLocal) document.documentElement.classList.add('is-admin');
+  window.addEventListener('keydown', e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='e'){
+      const on=localStorage.getItem('admin')==='1';
+      localStorage.setItem('admin', on?'0':'1');
+      location.reload();
+    }
+  });
+})();
+</script>
+
+</body></html>

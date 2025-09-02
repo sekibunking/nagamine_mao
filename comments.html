@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>論文のコメント</title>
+<style>
+:root{--brand:#e60033;--ink:#222;--muted:#666;--line:#e8e8e8;--bg:#f6f7f8;--card:#fff;--shadow:0 8px 24px rgba(0,0,0,.06)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.65 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans JP",sans-serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 14px}
+header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:12px;padding:10px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--brand)}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#ff4a6e,var(--brand))}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{height:28px;padding:0 8px;font-size:.9rem}
+.h2{font-weight:900;margin:14px 0 8px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.search{display:grid;grid-template-columns:1fr 160px 160px 160px auto auto;gap:8px;margin:10px 0}
+.search input,.search select{height:42px;border:1px solid var(--line);border-radius:999px;padding:0 12px}
+@media (max-width:980px){.search{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:640px){.search{grid-template-columns:1fr}}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:720px){.grid{grid-template-columns:1fr}}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.cmeta{padding:10px;display:grid;gap:6px}
+.title{font-weight:900}
+.sub{color:#666}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.86rem;color:#555}
+.badge.status{border-color:#bbb}
+.rating{letter-spacing:1px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.86rem;padding:2px 8px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;color:#555}
+.ops{display:flex;gap:6px;flex-wrap:wrap;margin:8px 10px 12px 10px}
+.sep{color:#bbb}
+.small{font-size:.9rem;color:#777}
+.note{white-space:pre-wrap}
+
+.empty{color:#777;border:1px dashed var(--line);background:#fff;padding:12px;border-radius:8px}
+
+footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0}
+.copyright{border-top:1px solid var(--line);color:#777;padding:12px 0;font-size:.88rem}
+
+/* ---- 編集パネル（スライドオーバー） ---- */
+.panel{position:fixed;inset:0;display:none;background:rgba(0,0,0,.35)}
+.panel .inner{position:absolute;right:0;top:0;bottom:0;width:680px;max-width:100%;background:#fff;border-left:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column}
+.panel header{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
+.panel .body{padding:12px;overflow:auto;display:grid;gap:10px}
+.row{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:center}
+.row input,.row select,.row textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.row textarea{min-height:90px}
+.panel .foot{display:flex;gap:8px;justify-content:flex-end;padding:10px;border-top:1px solid var(--line)}
+a.link{color:#06c;text-decoration:underline}
+
+
+.admin-only { display:none !important; }
+.is-admin .admin-only { display: initial !important; }
+.is-admin .admin-only.block { display:block !important; }
+</style>
+
+
+
+</head>
+<body>
+<header class="site">
+  <div class="container header-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span>長峰実央</span></a>
+    <div class="actions" style="margin-left:auto">
+      <a class="btn" href="history.html">履歴</a>
+      <a class="btn" href="units.html">取得単位</a>
+      <a class="btn" href="comments.html">論文のコメント</a>
+      <a class="btn" href="albums.html">アルバム</a>
+      <a class="btn primary" href="links.html">リンク集</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="h2">論文のコメント</div>
+  <div class="tools">
+    <button class="btn admin-only" id="btn-add">＋ コメント追加</button>
+    <button class="btn admin-only" id="btn-from-history">履歴から追加</button>
+    <button class="btn" id="btn-export">エクスポート</button>
+    <label class="btn admin-only" for="imp" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">インポート<input id="imp" type="file" accept="application/json" style="display:none"></label>
+  </div>
+
+  <form class="search" onsubmit="event.preventDefault(); applyFilters()">
+    <input id="q" placeholder="検索（タイトル／著者／誌名／メモ／タグ）" aria-label="検索">
+    <select id="f-status">
+      <option value="">全ステータス</option>
+      <option>To Read</option><option>Reading</option><option>Reviewed</option><option>Rejected</option>
+    </select>
+    <select id="f-stars">
+      <option value="0">評価（下限なし）</option>
+      <option value="5">★5 以上</option>
+      <option value="4">★4 以上</option>
+      <option value="3">★3 以上</option>
+      <option value="2">★2 以上</option>
+      <option value="1">★1 以上</option>
+    </select>
+    <select id="f-sort">
+      <option value="updated_desc">更新が新しい順</option>
+      <option value="stars_desc">評価が高い順</option>
+      <option value="title_asc">タイトル昇順</option>
+      <option value="date_desc">読了日が新しい順</option>
+    </select>
+    <button class="btn" type="submit">検索</button>
+    <button class="btn" type="button" onclick="clearFilters()">クリア</button>
+  </form>
+
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" style="display:none">まだコメントがありません。上の「＋ コメント追加」か「履歴から追加」へ。</div>
+</main>
+
+<footer>
+  <div class="container footer-links" id="footer-links"></div>
+  <div class="container copyright">© 2025 Mao Nagamine</div>
+</footer>
+
+<!-- 編集パネル -->
+<div id="panel" class="panel admin-only" aria-hidden="true">
+  <div class="inner" role="dialog" aria-modal="true" aria-labelledby="p-title">
+    <header>
+      <div id="p-title" class="title">コメント編集</div>
+      <button class="btn" id="p-close">閉じる</button>
+    </header>
+    <div class="body">
+      <div class="row"><label>タイトル</label><input id="f-title"></div>
+      <div class="row"><label>著者</label><input id="f-authors" placeholder="姓, 名; …"></div>
+      <div class="row"><label>掲載誌/会議</label><input id="f-venue"></div>
+      <div class="row"><label>リンク</label><input id="f-url" placeholder="DOI / URL"></div>
+      <div class="row"><label>関連（履歴）</label>
+        <div>
+          <select id="f-item">
+            <option value="">なし（手入力）</option>
+          </select>
+          <div class="small">履歴（hist_items_v7）の <span class="badge">論文</span> / <span class="badge">口頭発表</span> を一覧から選べます。</div>
+        </div>
+      </div>
+      <div class="row"><label>ステータス</label>
+        <select id="f-status2">
+          <option>To Read</option><option>Reading</option><option>Reviewed</option><option>Rejected</option>
+        </select>
+      </div>
+      <div class="row"><label>読了日</label><input id="f-read" type="date"></div>
+      <div class="row"><label>評価</label>
+        <select id="f-stars">
+          <option value="0">なし</option>
+          <option value="1">★1</option><option value="2">★2</option><option value="3">★3</option>
+          <option value="4">★4</option><option value="5">★5</option>
+        </select>
+      </div>
+      <div class="row"><label>タグ</label><input id="f-tags" placeholder="カンマ区切り 例：VR, 触覚"></div>
+      <div class="row"><label>概要/要点</label><textarea id="f-summary" placeholder="研究の目的・方法・主要結果、面白い図、注意点など"></textarea></div>
+      <div class="row"><label>強み</label><textarea id="f-pros"></textarea></div>
+      <div class="row"><label>弱み</label><textarea id="f-cons"></textarea></div>
+      <div class="row"><label>メモ</label><textarea id="f-note"></textarea></div>
+    </div>
+    <div class="foot">
+      <button class="btn" id="p-del" style="margin-right:auto">削除</button>
+      <button class="btn" id="p-dup">複製</button>
+      <button class="btn primary" id="p-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== フッター =====
+const FOOTER_LINKS=[
+  {label:'ホーム',href:'index.html'},
+  {label:'履歴',href:'history.html'},
+  {label:'取得単位',href:'units.html'},
+  {label:'論文のコメント',href:'comments.html'},
+  {label:'アルバム', href:'albums.html'},
+  {label:'リンク集',href:'links.html'},
+  {label:'お問い合わせ',href:'mailto:nagamine.mao.d9@elms.hokudai.ac.jp'}
+];
+function renderFooter(){
+  const nav=document.getElementById('footer-links'); if(!nav) return;
+  nav.innerHTML = FOOTER_LINKS.map((x,i)=>`
+    <a href="${x.href}" ${x.target?`target="${x.target}" rel="noopener"`:''}>${x.label}</a>
+    ${i<FOOTER_LINKS.length-1?'<span class="sep">/</span>':''}
+  `).join('');
+}
+document.addEventListener('DOMContentLoaded', renderFooter);
+
+// ===== 永続化 =====
+const LS = 'paper_comments_v2';
+const load = ()=> JSON.parse(localStorage.getItem(LS)||'[]');
+const save = (arr)=> localStorage.setItem(LS, JSON.stringify(arr));
+const uid = ()=> Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+// 履歴（論文/口頭発表）を読み出して選択肢に
+const LS_HIST = 'hist_items_v7';
+const loadHist = ()=> JSON.parse(localStorage.getItem(LS_HIST)||'[]').filter(x=>x.type==='paper'||x.type==='talk');
+
+// ===== 検索・ソート =====
+const Q = ()=> (document.getElementById('q')?.value||'').trim().toLowerCase();
+function hit(x,q){
+  if(!q) return true;
+  const hay = [x.title,x.authors,x.venue,x.note,x.summary,x.pros,x.cons,(x.tags||[]).join(' ')].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+function stars(n){n=+n||0; return '★★★★★☆☆☆☆☆'.slice(5-n,10-n);} // ★表記
+const statusColor = (s)=> ({'To Read':'#777','Reading':'#0b7','Reviewed':'#06c','Rejected':'#c30'})[s]||'#777';
+
+function applyFilters(){
+  sessionStorage.setItem('pc_q', Q());
+  sessionStorage.setItem('pc_status', document.getElementById('f-status').value);
+  sessionStorage.setItem('pc_stars', document.getElementById('f-stars').value);
+  sessionStorage.setItem('pc_sort', document.getElementById('f-sort').value);
+  render();
+}
+function clearFilters(){
+  ['q','f-status','f-stars','f-sort'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  ['pc_q','pc_status','pc_stars','pc_sort'].forEach(k=>sessionStorage.removeItem(k));
+  render();
+}
+
+// ===== 一覧 =====
+function card(x){
+  const itemUrl = x.itemId ? `item_detail.html?id=${x.itemId}` : '';
+  const tagHtml = (x.tags||[]).map(t=>`<span class="tag" data-tag="${t}">#${t}</span>`).join('');
+  return `<div class="card" data-id="${x.id}">
+    <div class="cmeta">
+      <div class="title">${x.title||'(無題)'} ${x.venue?`<span class="small">— ${x.venue}</span>`:''}</div>
+      <div class="sub">${x.authors||''}</div>
+      <div class="badges">
+        <span class="badge status" style="border-color:${statusColor(x.status)};color:${statusColor(x.status)}">${x.status||'To Read'}</span>
+        <span class="badge rating">${stars(x.stars||0)}</span>
+        ${x.readDate?`<span class="badge">読了: ${x.readDate}</span>`:''}
+        ${itemUrl?`<a class="badge" href="${itemUrl}">履歴の詳細</a>`:''}
+        ${x.url?`<a class="badge" target="_blank" rel="noopener" href="${x.url}">原文/DOI</a>`:''}
+      </div>
+      ${x.summary?`<div class="small note">${x.summary}</div>`:''}
+      <div class="tags">${tagHtml}</div>
+    </div>
+    <div class="ops admin-only block">
+      <button class="btn sm" data-act="edit">編集</button>
+      <button class="btn sm" data-act="dup">複製</button>
+      <button class="btn sm" data-act="del">削除</button>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const arr = load();
+  // 保存された検索条件を復元
+  const qSaved = sessionStorage.getItem('pc_q')||'';
+  const stSaved = sessionStorage.getItem('pc_status')||'';
+  const starSaved = sessionStorage.getItem('pc_stars')||'0';
+  const sortSaved = sessionStorage.getItem('pc_sort')||'updated_desc';
+  if(document.getElementById('q')) document.getElementById('q').value = qSaved;
+  if(document.getElementById('f-status')) document.getElementById('f-status').value = stSaved;
+  if(document.getElementById('f-stars')) document.getElementById('f-stars').value = starSaved;
+  if(document.getElementById('f-sort')) document.getElementById('f-sort').value = sortSaved;
+
+  const q = qSaved.toLowerCase();
+  const st = stSaved;
+  const minStars = +starSaved||0;
+
+  let filtered = arr.filter(x => hit(x,q) && (!st || x.status===st) && ((+x.stars||0) >= minStars));
+
+  // 並び替え
+  const sortBy = sortSaved;
+  filtered.sort((a,b)=>{
+    if(sortBy==='updated_desc'){
+      const ua=(a.updated||a.created||'').toString(), ub=(b.updated||b.created||'').toString();
+      return ub.localeCompare(ua);
+    }
+    if(sortBy==='stars_desc'){
+      return (+b.stars||0) - (+a.stars||0);
+    }
+    if(sortBy==='title_asc'){
+      return (a.title||'').localeCompare(b.title||'');
+    }
+    if(sortBy==='date_desc'){
+      return (b.readDate||'').localeCompare(a.readDate||'');
+    }
+    return 0;
+  });
+
+  document.getElementById('grid').innerHTML = filtered.map(card).join('');
+  document.getElementById('empty').style.display = filtered.length? 'none':'block';
+}
+
+// ===== 編集パネル =====
+let editingId = null;
+
+function openPanel(obj){
+  const p = document.getElementById('panel');
+  p.style.display='block'; p.setAttribute('aria-hidden','false');
+  // 履歴のセレクトを埋める（初回や毎回）
+  const sel = document.getElementById('f-item');
+  const hist = loadHist();
+  sel.innerHTML = `<option value="">なし（手入力）</option>` + hist.map(h=>`<option value="${h.id}">${h.title||'(無題)'} — ${h.venue||''}</option>`).join('');
+  // 値を入れる
+  const f = (id)=>document.getElementById(id);
+  f('f-title').value   = obj?.title||'';
+  f('f-authors').value = obj?.authors||'';
+  f('f-venue').value   = obj?.venue||'';
+  f('f-url').value     = obj?.url||'';
+  f('f-item').value    = obj?.itemId||'';
+  f('f-status2').value = obj?.status||'To Read';
+  f('f-read').value    = obj?.readDate||'';
+  f('f-stars').value   = String(obj?.stars||0);
+  f('f-tags').value    = (obj?.tags||[]).join(',');
+  f('f-summary').value = obj?.summary||'';
+  f('f-pros').value    = obj?.pros||'';
+  f('f-cons').value    = obj?.cons||'';
+  f('f-note').value    = obj?.note||'';
+  document.getElementById('p-del').style.visibility = editingId ? 'visible':'hidden';
+}
+
+function closePanel(){
+  const p = document.getElementById('panel');
+  p.style.display='none'; p.setAttribute('aria-hidden','true'); editingId=null;
+}
+
+document.getElementById('p-close').onclick = closePanel;
+document.getElementById('panel').onclick = (e)=>{ if(e.target.id==='panel') closePanel(); };
+
+// 保存/削除/複製
+document.getElementById('p-save').onclick = ()=>{
+  const f = (id)=>document.getElementById(id).value;
+  const now = new Date().toISOString();
+  const obj = {
+    id: editingId || uid(),
+    title: f('f-title'),
+    authors: f('f-authors'),
+    venue: f('f-venue'),
+    url: f('f-url'),
+    itemId: f('f-item') || '',
+    status: f('f-status2'),
+    readDate: f('f-read') || '',
+    stars: +f('f-stars')||0,
+    tags: f('f-tags').split(',').map(s=>s.trim()).filter(Boolean),
+    summary: document.getElementById('f-summary').value,
+    pros: document.getElementById('f-pros').value,
+    cons: document.getElementById('f-cons').value,
+    note: document.getElementById('f-note').value,
+    updated: now,
+    created: editingId ? undefined : now
+  };
+  const arr = load();
+  const i = arr.findIndex(x=>x.id===editingId);
+  if(i>=0) arr[i] = {...arr[i], ...obj};
+  else arr.push(obj);
+  save(arr); closePanel(); render();
+};
+document.getElementById('p-del').onclick = ()=>{
+  if(!editingId) return;
+  if(!confirm('このコメントを削除しますか？')) return;
+  const arr = load().filter(x=>x.id!==editingId);
+  save(arr); closePanel(); render();
+};
+document.getElementById('p-dup').onclick = ()=>{
+  const arr = load();
+  const i = arr.findIndex(x=>x.id===editingId);
+  if(i<0) return;
+  const c = {...arr[i], id: uid(), updated: new Date().toISOString(), created: new Date().toISOString(), title: arr[i].title + '（複製）'};
+  arr.unshift(c); save(arr); closePanel(); render();
+};
+
+// 追加ボタン
+document.getElementById('btn-add').onclick = ()=>{ editingId=null; openPanel(null); };
+
+// 履歴から追加
+document.getElementById('btn-from-history').onclick = ()=>{
+  const hist = loadHist();
+  if(!hist.length){ alert('履歴（論文/口頭発表）が見つかりません。history.htmlから追加してください。'); return; }
+  // とりあえず先頭を選んで編集画面に入れる（のちにセレクトで変更可）
+  editingId=null;
+  const first = hist[0] || {};
+  openPanel({
+    title: first.title||'',
+    authors: first.authors||'',
+    venue: first.venue||'',
+    url: first.url||'',
+    itemId: first.id||'',
+    status: 'To Read',
+    stars: 0
+  });
+};
+
+// グリッド内の操作
+document.getElementById('grid').onclick = (ev)=>{
+  const card = ev.target.closest('.card'); if(!card) return;
+  const id = card.dataset.id;
+  const arr = load();
+  const i = arr.findIndex(x=>x.id===id); if(i<0) return;
+  const act = ev.target.closest('button[data-act]')?.dataset.act;
+  if(act==='edit'){ editingId = id; openPanel(arr[i]); return; }
+  if(act==='del'){
+    if(!confirm('このコメントを削除しますか？')) return;
+    arr.splice(i,1); save(arr); render(); return;
+  }
+  if(act==='dup'){
+    const c = {...arr[i], id: uid(), updated: new Date().toISOString(), created: new Date().toISOString(), title: arr[i].title + '（複製）'};
+    arr.unshift(c); save(arr); render(); return;
+  }
+  // タグクリック→検索
+  const tag = ev.target.closest('.tag');
+  if(tag){ document.getElementById('q').value = tag.dataset.tag; applyFilters(); }
+};
+
+// 入出力
+document.getElementById('btn-export').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(load(),null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='paper_comments.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById('imp').onchange = (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload = ()=>{
+    try{
+      const incoming = JSON.parse(r.result||'[]'); if(!Array.isArray(incoming)) throw new Error('配列ではありません');
+      const map = new Map(load().map(x=>[x.id,x]));
+      for(const x of incoming){ if(x && x.id) map.set(x.id, x); }
+      save(Array.from(map.values())); render(); alert('インポートしました');
+    }catch(err){ alert('インポート失敗: '+err.message); }
+    e.target.value='';
+  };
+  r.readAsText(f,'utf-8');
+};
+
+// 初回
+document.addEventListener('DOMContentLoaded', ()=>{
+  // 検索条件の復元
+  const set = (id,key)=>{ const v=sessionStorage.getItem(key); if(v!=null) document.getElementById(id).value=v; };
+  set('q','pc_q'); set('f-status','pc_status'); set('f-stars','pc_stars'); set('f-sort','pc_sort');
+  render();
+});
+</script>
+
+<script>
+(function(){
+  const p=new URLSearchParams(location.search);
+  const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+               || location.protocol==='file:'
+               || p.get('admin')==='1'
+               || localStorage.getItem('admin')==='1';
+  if(isLocal) document.documentElement.classList.add('is-admin');
+  // Ctrl+Shift+E で切替
+  addEventListener('keydown',e=>{
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='e'){
+      const on=localStorage.getItem('admin')==='1';
+      localStorage.setItem('admin', on?'0':'1'); location.reload();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
