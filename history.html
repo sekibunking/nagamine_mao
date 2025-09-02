@@ -175,6 +175,24 @@ footer{margin-top:26px;background:#fff;border-top:1px solid var(--line)}.copyrig
   <div class="container copyright">© 2025 Mao Nagamine</div>
 </footer>
 
+
+<script>
+/* GitHub上の data/history.json を読み込んで localStorage に流し込む */
+(function(){
+  const LS = 'hist_items_v7';
+  fetch('data/history.json', { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : {items:[]})
+    .then(obj => {
+      if (Array.isArray(obj.items)) {
+        localStorage.setItem(LS, JSON.stringify(obj.items));
+      }
+      if (typeof render === 'function') render();
+    })
+    .catch(() => { if (typeof render === 'function') render(); });
+})();
+</script>
+
+
 <script>
 const LS='hist_items_v7';
 const load=()=>JSON.parse(localStorage.getItem(LS)||'[]');
