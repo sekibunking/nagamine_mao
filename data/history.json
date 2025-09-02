@@ -1,0 +1,55 @@
+{
+  "items": [
+    {
+      "id": "2025-09-02-talk-001",
+      "type": "talk",
+      "title": "○○国際会議での発表タイトル",
+      "date": "2025-09-12",
+      "venue": "○○ Conference 2025",
+      "loc": "札幌",
+      "url": "",
+      "thumb": "",
+      "note": ""
+    },
+    {
+      "id": "2025-08-31-paper-001",
+      "type": "paper",
+      "title": "論文タイトル",
+      "date": "2025-08",
+      "venue": "Journal of Something",
+      "loc": "",
+      "url": "https://doi.org/xxxxx",
+      "thumb": "",
+      "note": "査読あり など"
+    },
+    {
+      "id": "2025-04-01-edu-kg",
+      "type": "education",
+      "title": "関西学院大学",
+      "date": "",
+      "venue": "",
+      "note": "",
+      "edu": {
+        "start": "2018-04",
+        "end": "2022-03",
+        "school": "関西学院大学",
+        "faculty": "理工学部",
+        "department": "数学",
+        "course": "学部",
+        "major": "数学"
+      }
+    },
+    {
+      "id": "2025-06-01-grant-001",
+      "type": "grant",
+      "title": "科研費（○○）",
+      "date": "2025",
+      "venue": "JSPS",
+      "loc": "",
+      "url": "",
+      "thumb": "",
+      "note": "区分・金額メモなど",
+      "usage": []
+    }
+  ]
+}
