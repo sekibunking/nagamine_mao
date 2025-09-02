@@ -275,3 +275,59 @@ function updateUnitsCount(){
 // 既存 applySearch の最後に、この1行を足すと便利
 // （関数の末尾：msg.textContent を設定した直後など）
 try{ updateUnitsCount(); }catch(e){}
+
+// ===== Admin-only UI (GitHub edit shortcuts) =====
+(function () {
+  // ① admin=1 をURLに付けて開くとON、OFFはボタン or localStorage クリア
+  const params = new URLSearchParams(location.search);
+  if (params.get('admin') === '1') {
+    localStorage.setItem('isAdmin', '1');
+    // 見た目を綺麗に：クエリを消す
+    history.replaceState({}, '', location.pathname + location.hash);
+  }
+  const isAdmin = localStorage.getItem('isAdmin') === '1';
+  if (!isAdmin) return;
+
+  // ② リポジトリ情報（必要に応じて書き換え）
+  const owner = 'sekibunking';
+  const repo  = 'nagamine_mao';
+  const branch = 'main';
+  const repoBasePath = `/${repo}/`; // プロジェクトページのURLのベース
+
+  // ③ 今見ているファイルのパスを推定（GitHub Pagesの /repo/ を外す）
+  const toRepoPath = () => {
+    let p = location.pathname;
+    // 例: /nagamine_mao/links.html -> links.html
+    if (p.startsWith(repoBasePath)) p = p.slice(repoBasePath.length);
+    if (p === '' || p.endsWith('/')) p += 'index.html';
+    return decodeURIComponent(p.replace(/^\/+/, ''));
+  };
+
+  // ④ 編集リンク＆新規作成リンク
+  const currentPath = toRepoPath();
+  const editUrl = `https://github.com/${owner}/${repo}/edit/${branch}/${currentPath}`;
+  const repoRootNewUrl = `https://github.com/${owner}/${repo}/new/${branch}/`;   // ルートに新規ファイル
+  const newInAssetsUrl = `https://github.com/${owner}/${repo}/new/${branch}/assets/`; // assets内に新規
+
+  // ⑤ 画面にフローティングUIを追加
+  const wrap = document.createElement('div');
+  wrap.className = 'admin-fab';
+  wrap.innerHTML = `
+    <a href="${editUrl}" target="_blank" rel="noopener">✏️ このページを編集</a>
+    <a href="${repoRootNewUrl}" target="_blank" rel="noopener">➕ ルートに新規ファイル</a>
+    <a href="${newInAssetsUrl}" target="_blank" rel="noopener">➕ assetsに新規ファイル</a>
+    <button id="admin-off">🚪 Admin OFF</button>
+  `;
+  document.body.appendChild(wrap);
+
+  const badge = document.createElement('div');
+  badge.className = 'admin-badge';
+  badge.textContent = 'ADMIN MODE';
+  document.body.appendChild(badge);
+
+  document.getElementById('admin-off').addEventListener('click', () => {
+    localStorage.removeItem('isAdmin');
+    location.reload();
+  });
+})();
+
